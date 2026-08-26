@@ -14,6 +14,6 @@ namespace DigitalArs.Domain.Entities{
         public Role? Role { get; set; }
 
         // Relacion 1 a N: Un usuario tiene sus cuentas
-        public ICollection<Account> Accounts { get; set; } = new List<Account>();
+        public Account? Account { get; set; }
     }
 }

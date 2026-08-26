@@ -5,7 +5,7 @@ namespace DigitalArs.Domain.Entities{
         public int Id { get; set; }
         public decimal Amount { get; set; } = 0m;
         public string Concept { get; set; } = string.Empty;
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;        
         public TransactionType Type { get; set; }
 
         // Cuenta origen
