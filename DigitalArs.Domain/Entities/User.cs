@@ -13,7 +13,7 @@ namespace DigitalArs.Domain.Entities{
         public int RoleId { get; set; }
         public Role? Role { get; set; }
 
-        // Relacion 1 a N: Un usuario tiene sus cuentas
+        // Relacion 1 a 1: Un usuario tiene sus cuentas
         public Account? Account { get; set; }
     }
 }
