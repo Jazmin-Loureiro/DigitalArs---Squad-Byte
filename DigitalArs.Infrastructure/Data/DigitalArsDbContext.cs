@@ -1,4 +1,5 @@
 using DigitalArs.Domain.Entities;
+using DigitalArs.Infrastructure.Configurations; 
 using Microsoft.EntityFrameworkCore;
 
 namespace DigitalArs.Infrastructure.Data;
@@ -22,5 +23,8 @@ public class DigitalArsDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(DigitalArsDbContext).Assembly
         );
+
+        // HU-05: Carga de datos iniciales
+        modelBuilder.SeedData(); 
     }
 }
