@@ -1,3 +1,7 @@
+// Importación del espacio de nombres donde está definido DigitalArsDbContext
+using DigitalArs.Infrastructure.Data;
+// Importación de Entity Framework Core para habilitar extensiones como UseSqlServer
+using Microsoft.EntityFrameworkCore;
 
 namespace DigitalArs
 {
@@ -6,6 +10,13 @@ namespace DigitalArs
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Registro de DigitalArsDbContext en el contenedor de inyección de dependencias (DI).
+            // Se configura para usar el proveedor de SQL Server y se obtiene la connection string
+            // del archivo appsettings.json bajo la clave 'DigitalArsDB'. Esto permite que tanto la app
+            // como las herramientas de EF Core ('dotnet ef') se conecten a la base de datos.
+            builder.Services.AddDbContext<DigitalArsDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DigitalArsDB")));
 
             // Add services to the container.
 
