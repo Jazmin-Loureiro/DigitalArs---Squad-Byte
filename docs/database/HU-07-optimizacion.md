@@ -31,7 +31,7 @@ Facilita la búsqueda de una cuenta a partir de su usuario. Además, es un índi
 
 ### IX_Transactions_CreatedDate
 
-Optimiza consultas del historial de transacciones que filtran u ordenan los movimientos por fecha.
+Optimiza consultas del historial de transacciones que filtran los movimientos por fecha, por ejemplo al consultar transacciones dentro de un rango temporal.
 
 ### IX_Users_RoleId
 
@@ -157,6 +157,6 @@ Los campos monetarios `Money` y `Amount` utilizan `decimal(18,2)`, permitiendo r
 
 Las relaciones utilizan `DeleteBehavior.Restrict`, evitando eliminaciones en cascada que podrían provocar la pérdida accidental de información relacionada.
 
-Las consultas analizadas muestran que Entity Framework Core traduce correctamente las expresiones LINQ a consultas SQL compatibles con SQL Server y permiten relacionar las decisiones de indexación con operaciones concretas de la aplicación.
+Las consultas analizadas permiten observar cómo Entity Framework Core traduce las expresiones LINQ utilizadas en DigitalArs a SQL para SQL Server y relacionar las decisiones de indexación con operaciones concretas de la aplicación.
 
 Como posibles mejoras futuras, el rendimiento de las consultas podrá volver a evaluarse cuando la aplicación maneje un volumen mayor de datos. En ese contexto se podrán analizar planes de ejecución, tiempos de respuesta y la necesidad de índices adicionales o compuestos según los patrones reales de uso.
