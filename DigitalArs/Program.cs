@@ -2,6 +2,7 @@
 using DigitalArs.Infrastructure.Data;
 // Importación de Entity Framework Core para habilitar extensiones como UseSqlServer
 using Microsoft.EntityFrameworkCore;
+using DigitalArs.Infrastructure;
 
 namespace DigitalArs
 {
@@ -12,9 +13,7 @@ namespace DigitalArs
             var builder = WebApplication.CreateBuilder(args);
 
             // Registro de DigitalArsDbContext en el contenedor de inyección de dependencias (DI).
-            // Se configura para usar el proveedor de SQL Server y se obtiene la connection string
-            // del archivo appsettings.json bajo la clave 'DigitalArsDB'. Esto permite que tanto la app
-            // como las herramientas de EF Core ('dotnet ef') se conecten a la base de datos.
+            // Se configura para usar el proveedor de SQL Server y se obtiene la connection a la base de datos.
             builder.Services.AddDbContext<DigitalArsDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DigitalArsDB")));
 
@@ -24,6 +23,9 @@ namespace DigitalArs
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            // Registro de IRepository e IUnitOfWork
+            builder.Services.AddInfrastructureServices();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -32,6 +34,7 @@ namespace DigitalArs
                 app.MapOpenApi();
                 app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "DigitalArs V1"));
             }
+
 
             app.UseHttpsRedirection();
 
