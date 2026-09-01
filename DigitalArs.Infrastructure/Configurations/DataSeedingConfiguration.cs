@@ -14,13 +14,11 @@ public static class DataSeedingConfiguration
             new Role { Id = 2, Name = "User", Description = "Usuario regular de la plataforma" }
         );
 
-        // 2. Hashes estáticos reales y deterministas (BCrypt WorkFactor 11)
-        // Admin123!
-        const string adminHash = "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
-        // User123!
-        const string userHash = "$2a$11$J1pZ3W8eA8mF4qL0nJ6oW.hGz9hKzJkU9n/mQ1kL9p4qL0mJ6oW5e";
+        // 2. Hashes BCrypt reales generados por la aplicación
+        const string adminHash = "$2a$11$a7CaaYtCyAL1vCpAt6YUKOPZziCEjXCEtzyowiIovuzWyv0lXWbuK";
+        const string userHash  = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S";
 
-        // 3. Usuarios (1 Admin + 2 User)
+        // 3. Usuarios asignando las variables correspondientes
         modelBuilder.Entity<User>().HasData(
             new User
             {

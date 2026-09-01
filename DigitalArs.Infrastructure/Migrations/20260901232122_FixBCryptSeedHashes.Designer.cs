@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalArs.Infrastructure.Migrations
 {
     [DbContext(typeof(DigitalArsDbContext))]
-    [Migration("20260901030145_UpdateSeederWithFixedHashes")]
-    partial class UpdateSeederWithFixedHashes
+    [Migration("20260901232122_FixBCryptSeedHashes")]
+    partial class FixBCryptSeedHashes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -199,7 +199,7 @@ namespace DigitalArs.Infrastructure.Migrations
                             Email = "admin@digitalars.com",
                             FirstName = "Admin",
                             LastName = "DigitalArs",
-                            Password = "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+                            Password = "$2a$11$a7CaaYtCyAL1vCpAt6YUKOPZziCEjXCEtzyowiIovuzWyv0lXWbuK",
                             Points = 1000,
                             RoleId = 1
                         },
@@ -209,7 +209,7 @@ namespace DigitalArs.Infrastructure.Migrations
                             Email = "juan.perez@digitalars.com",
                             FirstName = "Juan",
                             LastName = "Perez",
-                            Password = "$2a$11$J1pZ3W8eA8mF4qL0nJ6oW.hGz9hKzJkU9n/mQ1kL9p4qL0mJ6oW5e",
+                            Password = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S",
                             Points = 100,
                             RoleId = 2
                         },
@@ -219,7 +219,7 @@ namespace DigitalArs.Infrastructure.Migrations
                             Email = "maria.gomez@digitalars.com",
                             FirstName = "Maria",
                             LastName = "Gomez",
-                            Password = "$2a$11$J1pZ3W8eA8mF4qL0nJ6oW.hGz9hKzJkU9n/mQ1kL9p4qL0mJ6oW5e",
+                            Password = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S",
                             Points = 150,
                             RoleId = 2
                         });
