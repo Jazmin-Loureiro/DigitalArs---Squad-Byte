@@ -48,7 +48,7 @@ namespace DigitalArs.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
 
                     b.HasData(
                         new
@@ -95,7 +95,7 @@ namespace DigitalArs.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -148,7 +148,7 @@ namespace DigitalArs.Infrastructure.Migrations
 
                     b.HasIndex("ToAccountId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("DigitalArs.Domain.Entities.User", b =>
@@ -187,7 +187,7 @@ namespace DigitalArs.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new
