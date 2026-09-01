@@ -1,29 +1,41 @@
+// Codificación de texto a bytes para la clave criptográfica del JWT
+using System.Text;
+
 // Importación del contexto de base de datos para la configuración de Entity Framework
 using DigitalArs.Infrastructure.Data;
 
 // Importación de Entity Framework Core para habilitar métodos de extensión como UseSqlServer
 using Microsoft.EntityFrameworkCore;
 
-// Importación del namespace de Infrastructure para acceder al método AddInfrastructureServices() 
+// Importación del namespace de Infrastructure para acceder al método AddInfrastructureServices()
 using DigitalArs.Infrastructure;
 
-// Importación de la configuración centralizada de mapeos con Mapster (HU-08)
+// Importación de la configuración centralizada de mapeos con Mapster
 using DigitalArs.Application.Mappings;
 
-// Importación del core de FluentValidation para el registro automático de reglas de validación 
+// Importación del core de FluentValidation para el registro automático de reglas de validación
 using FluentValidation;
 
 // Importación de Mapster para la inyección de dependencias de mapeo objeto a objeto
 using Mapster;
 
-// Importación del filtro middleware para autovalidar DTOs en los controladores y retornar 400 Bad Request 
+// Importación del filtro middleware para autovalidar DTOs en los controladores y retornar 400 Bad Request
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
-// Importación del contrato de hashing de contraseñas (IPasswordHasher) desde la capa Application 
+// Importación de las interfaces de servicios de la capa Application (IPasswordHasher, IJwtProvider, IAuthService)
 using DigitalArs.Application.Interfaces;
 
-// Importación de la implementación concreta con BCrypt (PasswordHasher) desde la capa Infrastructure 
+// Importación de los servicios concretos de Application (AuthService)
+using DigitalArs.Application.Services;
+
+// Importación de los servicios concretos de Infrastructure (PasswordHasher, JwtProvider)
 using DigitalArs.Infrastructure.Services;
+
+// Soporte de esquemas de autenticación Bearer JWT en ASP.NET Core
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+// Herramientas de validación y claves simétricas para tokens JWT
+using Microsoft.IdentityModel.Tokens;
 
 namespace DigitalArs
 {
@@ -33,31 +45,61 @@ namespace DigitalArs
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Registro de DigitalArsDbContext en el contenedor de inyección de dependencias (DI) con SQL Server
+            // 1. Registro de DigitalArsDbContext en el contenedor de inyección de dependencias (DI) con SQL Server
             builder.Services.AddDbContext<DigitalArsDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DigitalArsDB")));
 
             // Registro de controladores de la API
             builder.Services.AddControllers();
 
-            // Configuración de OpenAPI para documentación
+            // Configuración de OpenAPI para documentación y exploración de endpoints
             builder.Services.AddOpenApi();
 
-            // Registro de repositorios genéricos y Unit of Work 
+            // 2. Registro de repositorios genéricos y Unit of Work
             builder.Services.AddInfrastructureServices();
             
-            // 1. Configurar y registrar mapeos centralizados de Mapster 
+            // 3. Configurar y registrar mapeos centralizados de Mapster
             MappingConfig.RegisterMappings();
             builder.Services.AddMapster();
 
-            // 2. Escaneo y registro de todos los validadores de FluentValidation en Application 
+            // 4. Escaneo y registro de todos los validadores de FluentValidation en Application
             builder.Services.AddValidatorsFromAssemblyContaining<DigitalArs.Application.DTOs.Auth.LoginRequestDto>();
 
-            // 3. Habilitación de la intercepción y validación automática de payloads entrantes 
+            // 5. Habilitación de la intercepción y validación automática de payloads entrantes
             builder.Services.AddFluentValidationAutoValidation();
 
-            // Registro del servicio de hashing de contraseñas con ciclo de vida Scoped
+            // 6. Registro del servicio de hashing de contraseñas
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+            // 7. Registro de servicios de generación de tokens y autenticación
+            builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            // 8. Configuración del esquema de autenticación JWT Bearer
+            var secretKey = builder.Configuration["JwtSettings:SecretKey"] 
+                ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada en appsettings.json");
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
             var app = builder.Build();
 
@@ -70,6 +112,11 @@ namespace DigitalArs
 
             app.UseHttpsRedirection();
 
+            // Middleware de autenticación (identifica quién es el usuario mediante el token)
+            // DEBE ejecutarse obligatoriamente antes de UseAuthorization
+            app.UseAuthentication();
+
+            // Middleware de autorización (comprueba si el usuario tiene permisos o el rol requerido)
             app.UseAuthorization();
 
             app.MapControllers();
