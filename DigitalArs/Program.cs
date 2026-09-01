@@ -37,6 +37,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 // Herramientas de validación y claves simétricas para tokens JWT
 using Microsoft.IdentityModel.Tokens;
 
+// Clases para construir políticas de autorización global
+using Microsoft.AspNetCore.Authorization;
+
+// Filtros para aplicar requisitos de autorización a nivel de controlador
+using Microsoft.AspNetCore.Mvc.Authorization;
+
 namespace DigitalArs
 {
     public class Program
@@ -49,8 +55,15 @@ namespace DigitalArs
             builder.Services.AddDbContext<DigitalArsDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DigitalArsDB")));
 
-            // Registro de controladores de la API
-            builder.Services.AddControllers();
+            // Registro de controladores aplicando [Authorize] por defecto de forma global
+            builder.Services.AddControllers(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             // Configuración de OpenAPI para documentación y exploración de endpoints
             builder.Services.AddOpenApi();

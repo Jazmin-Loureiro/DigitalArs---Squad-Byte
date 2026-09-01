@@ -1,6 +1,7 @@
 using DigitalArs.Application.DTOs.Auth;
 using DigitalArs.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DigitalArs.Controllers;
 
@@ -15,11 +16,8 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    /// <summary>
-    /// Inicia sesión y retorna un token JWT firmado.
-    /// </summary>
-    /// <param name="request">Credenciales (Email y Password)</param>
-    /// <returns>Token JWT, fecha de expiración y datos del usuario</returns>
+    // Endpoint público para autenticación y obtención de JWT
+    [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
