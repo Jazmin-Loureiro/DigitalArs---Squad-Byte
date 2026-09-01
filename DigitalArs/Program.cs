@@ -3,6 +3,10 @@ using DigitalArs.Infrastructure.Data;
 // Importación de Entity Framework Core para habilitar extensiones como UseSqlServer
 using Microsoft.EntityFrameworkCore;
 using DigitalArs.Infrastructure;
+using DigitalArs.Application.Mappings;
+using FluentValidation;
+using Mapster;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace DigitalArs
 {
@@ -25,6 +29,16 @@ namespace DigitalArs
 
             // Registro de IRepository e IUnitOfWork
             builder.Services.AddInfrastructureServices();
+            
+            // 1. Configurar Mapeos de Mapster
+            MappingConfig.RegisterMappings();
+            builder.Services.AddMapster();
+
+            // 2. Registrar Validadores de FluentValidation del proyecto Application
+            builder.Services.AddValidatorsFromAssemblyContaining<DigitalArs.Application.DTOs.Auth.LoginRequestDto>();
+
+            // 3. Habilitar Auto-Validación en los controladores
+            builder.Services.AddFluentValidationAutoValidation();
 
             var app = builder.Build();
 
