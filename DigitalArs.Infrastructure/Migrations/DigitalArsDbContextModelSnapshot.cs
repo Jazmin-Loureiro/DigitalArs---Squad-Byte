@@ -48,7 +48,7 @@ namespace DigitalArs.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
 
                     b.HasData(
                         new
@@ -95,7 +95,7 @@ namespace DigitalArs.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
@@ -148,7 +148,7 @@ namespace DigitalArs.Infrastructure.Migrations
 
                     b.HasIndex("ToAccountId");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("DigitalArs.Domain.Entities.User", b =>
@@ -187,7 +187,7 @@ namespace DigitalArs.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -196,7 +196,7 @@ namespace DigitalArs.Infrastructure.Migrations
                             Email = "admin@digitalars.com",
                             FirstName = "Admin",
                             LastName = "DigitalArs",
-                            Password = "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+                            Password = "$2a$11$a7CaaYtCyAL1vCpAt6YUKOPZziCEjXCEtzyowiIovuzWyv0lXWbuK",
                             Points = 1000,
                             RoleId = 1
                         },
@@ -206,7 +206,7 @@ namespace DigitalArs.Infrastructure.Migrations
                             Email = "juan.perez@digitalars.com",
                             FirstName = "Juan",
                             LastName = "Perez",
-                            Password = "$2a$11$J1pZ3W8eA8mF4qL0nJ6oW.hGz9hKzJkU9n/mQ1kL9p4qL0mJ6oW5e",
+                            Password = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S",
                             Points = 100,
                             RoleId = 2
                         },
@@ -216,7 +216,7 @@ namespace DigitalArs.Infrastructure.Migrations
                             Email = "maria.gomez@digitalars.com",
                             FirstName = "Maria",
                             LastName = "Gomez",
-                            Password = "$2a$11$J1pZ3W8eA8mF4qL0nJ6oW.hGz9hKzJkU9n/mQ1kL9p4qL0mJ6oW5e",
+                            Password = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S",
                             Points = 150,
                             RoleId = 2
                         });
