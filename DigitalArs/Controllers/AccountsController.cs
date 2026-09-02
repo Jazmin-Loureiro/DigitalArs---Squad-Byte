@@ -47,4 +47,29 @@ public class AccountsController : ControllerBase
 
         return Ok(account);
     }
+
+    // POST: api/accounts/deposit : Deposita dinero en la cuenta del usuario autenticado
+    [HttpPost("deposit")]
+    [ProducesResponseType(typeof(DepositResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Deposit([FromBody] DepositRequestDto request)
+    {
+        var userId = User.GetUserId();
+
+        try
+        {
+            var result = await _accountService.DepositAsync(userId, request);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
+
