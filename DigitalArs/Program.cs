@@ -70,7 +70,7 @@ namespace DigitalArs
 
             // 2. Registro de repositorios genéricos y Unit of Work
             builder.Services.AddInfrastructureServices();
-            
+
             // 3. Configurar y registrar mapeos centralizados de Mapster
             MappingConfig.RegisterMappings();
             builder.Services.AddMapster();
@@ -89,7 +89,7 @@ namespace DigitalArs
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             // 8. Configuración del esquema de autenticación JWT Bearer
-            var secretKey = builder.Configuration["JwtSettings:SecretKey"] 
+            var secretKey = builder.Configuration["JwtSettings:SecretKey"]
                 ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada en appsettings.json");
 
             builder.Services.AddAuthentication(options =>
@@ -114,6 +114,18 @@ namespace DigitalArs
                 };
             });
 
+            // 9. Configuración de CORS para permitir solicitudes desde el frontend React
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("FrontendPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:5173")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
 
             // Configuración del pipeline de solicitudes HTTP
@@ -124,6 +136,9 @@ namespace DigitalArs
             }
 
             app.UseHttpsRedirection();
+
+            // Permitir solicitudes desde el frontend React
+            app.UseCors("FrontendPolicy");
 
             // Middleware de autenticación (identifica quién es el usuario mediante el token)
             // DEBE ejecutarse obligatoriamente antes de UseAuthorization
