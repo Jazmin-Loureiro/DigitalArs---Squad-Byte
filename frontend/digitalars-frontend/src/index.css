@@ -109,3 +109,19 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/*
+ * Mantiene la legibilidad de los campos cuando Chrome/Safari
+ * completa automáticamente información guardada por el usuario.
+ *
+ * Los navegadores WebKit aplican estilos propios a :-webkit-autofill,
+ * por lo que definimos explícitamente el color del texto.
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #1e3a5f;
+  caret-color: #1e3a5f;
+  transition: background-color 5000s ease-in-out 0s;
+}

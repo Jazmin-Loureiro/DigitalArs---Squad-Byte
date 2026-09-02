@@ -9,6 +9,8 @@ import LoginPage from './pages/LoginPage';
 import MovementsPage from './pages/MovementsPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import DepositPage from './pages/DepositPage';
+import TransferPage from './pages/TransferPage';
 
 /**
  * Define la estructura de rutas de Digital ARS.
@@ -30,6 +32,8 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/depositar" element={<DepositPage />} />
+          <Route path="/transferir" element={<TransferPage />} />
           <Route path="/movimientos" element={<MovementsPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
 
@@ -44,7 +48,8 @@ function App() {
           
           {/* Ruta de recuperación para URLs inexistentes */}
           <Route path="*" element={<NotFoundPage />} />
-          </Route>
+
+        </Route>
       </Route>
     </Routes>
   );

@@ -189,7 +189,13 @@ if (user?.roleName?.toLowerCase() === 'admin') {
               {user?.lastName?.charAt(0)}
             </Avatar>
 
-            <Box sx={{ minWidth: 0 }}>
+            <Box
+              sx={{
+                minWidth: 0,
+                flex: 1,
+                textAlign: 'left',
+              }}
+            >
               <Typography fontWeight={600} noWrap>
                 {user?.firstName} {user?.lastName}
               </Typography>
@@ -289,6 +295,7 @@ if (user?.roleName?.toLowerCase() === 'admin') {
           pt: { xs: 8, md: 0 },
           pb: { xs: 9, md: 0 },
           minHeight: '100vh',
+          pd: { xs:10, md: 0,}
         }}
       >
         <Outlet />
