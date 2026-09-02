@@ -89,7 +89,10 @@ namespace DigitalArs
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
 
-            // 8. Configuración del esquema de autenticación JWT Bearer
+            // 8. Registro del servicio de gestión y CRUD de usuarios
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            // 9. Configuración del esquema de autenticación JWT Bearer
             var secretKey = builder.Configuration["JwtSettings:SecretKey"]
                 ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada en appsettings.json");
 
