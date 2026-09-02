@@ -9,5 +9,8 @@ public interface IAccountService
 
     // Obtiene una cuenta por su identificador único (Solo administración)
     Task<AccountResponseDto?> GetAccountByIdAsync(int accountId);
+
+    // HU-15: Deposita dinero en la cuenta del usuario autenticado
+    Task<DepositResponseDto> DepositAsync(int userId, DepositRequestDto request);
 }
 
