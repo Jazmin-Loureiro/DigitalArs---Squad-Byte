@@ -87,6 +87,7 @@ namespace DigitalArs
             // 7. Registro de servicios de generación de tokens y autenticación
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
             // 8. Configuración del esquema de autenticación JWT Bearer
             var secretKey = builder.Configuration["JwtSettings:SecretKey"] 
