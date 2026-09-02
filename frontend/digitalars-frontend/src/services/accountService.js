@@ -21,6 +21,24 @@ const accountService = {
 
     return response.data;
   },
+  /**
+   * Deposita dinero en la cuenta del usuario autenticado.
+   *
+   * El backend obtiene la cuenta a partir del JWT y se encarga de
+   * actualizar el saldo y registrar la transacción correspondiente.
+   *
+   * @param {number} amount Monto a depositar.
+   * @param {string} concept Concepto opcional del depósito.
+   * @returns {Promise<Object>} Resultado de la operación y nuevo saldo.
+   */
+  async deposit(amount, concept = '') {
+    const response = await api.post('/accounts/deposit', {
+      amount,
+      concept,
+    });
+
+    return response.data;
+  },
 };
 
 export default accountService;
