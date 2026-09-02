@@ -20,7 +20,7 @@ import {
   VisibilityOutlined,
 } from '@mui/icons-material';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -142,7 +142,7 @@ function LoginPage() {
               variant="h4"
               component="h1"
               fontWeight={700}
-              color="primary.dark"
+              sx={{ color: '#1E3A5F' }}
             >
               Digital ARS
             </Typography>
