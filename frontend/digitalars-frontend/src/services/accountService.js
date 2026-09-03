@@ -39,6 +39,27 @@ const accountService = {
 
     return response.data;
   },
+  /**
+   * Transfiere dinero desde la cuenta del usuario autenticado
+   * hacia otra cuenta de Digital ARS.
+   *
+   * El backend identifica la cuenta de origen mediante el JWT y
+   * actualiza ambos saldos de forma atómica.
+   *
+   * @param {number} toAccountId ID de la cuenta destinataria.
+   * @param {number} amount Monto a transferir.
+   * @param {string} concept Concepto opcional de la transferencia.
+   * @returns {Promise<Object>} Resultado de la operación y nuevo saldo.
+   */
+  async transfer(toAccountId, amount, concept = '') {
+    const response = await api.post('/accounts/transfer', {
+      toAccountId,
+      amount,
+      concept,
+    });
+
+    return response.data;
+  },
 };
 
 export default accountService;

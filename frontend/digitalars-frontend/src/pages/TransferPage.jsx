@@ -1,11 +1,13 @@
 import {
   AccountBalanceOutlined,
+  CheckCircleOutlineOutlined,
   SwapHorizOutlined,
 } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,6 +21,7 @@ import {
 } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import accountService from '../services/accountService';
 
 /**
  * Página para iniciar una transferencia desde la cuenta del usuario.
@@ -41,6 +44,8 @@ function TransferPage() {
   const [amountError, setAmountError] = useState('');
   const [requestError, setRequestError] = useState('');
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transferResult, setTransferResult] = useState(null);
 
   /**
    * Formatea importes utilizando la convención monetaria argentina.
@@ -109,6 +114,10 @@ function TransferPage() {
       setAmountError('El monto debe ser mayor a cero.');
       return false;
     }
+    if (Number(normalizedAmount) > 300000) {
+      setAmountError('El monto máximo por transferencia es de $300.000.');
+      return false;
+    }
 
     setAmountError('');
     return true;
@@ -147,20 +156,146 @@ function TransferPage() {
   const handleCloseConfirmation = () => {
     setIsConfirmationOpen(false);
   };
-
   /**
-   * HU-16 todavía no está disponible.
+   * Ejecuta la transferencia una vez que el usuario confirmó los datos.
    *
-   * Este handler será reemplazado por la llamada real al servicio de
-   * transferencias cuando conozcamos y verifiquemos el contrato final.
+   * Mientras la solicitud está en curso se bloquean las acciones para
+   * evitar envíos duplicados. Los errores del backend se muestran en
+   * lenguaje claro y los datos del formulario se conservan para poder
+   * corregirlos sin empezar nuevamente.
    */
-  const handleConfirmTransfer = () => {
-    setIsConfirmationOpen(false);
-    setRequestError(
-      'La transferencia todavía no está disponible. La integración se completará cuando el servicio de transferencias esté habilitado.',
-    );
+  const handleConfirmTransfer = async () => {
+    setIsSubmitting(true);
+    setRequestError('');
+
+    try {
+      const result = await accountService.transfer(
+        Number(destinationAccountId),
+        getNumericAmount(),
+        description.trim(),
+      );
+
+      setIsConfirmationOpen(false);
+      setTransferResult(result);
+    } catch (error) {
+      setIsConfirmationOpen(false);
+
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.title ||
+        'No pudimos realizar la transferencia. Intentá nuevamente.';
+
+      setRequestError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  if (transferResult) {
+    return (
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: 620,
+          mx: 'auto',
+          px: { xs: 3, md: 4 },
+          pt: { xs: 6, md: 8 },
+          pb: 4,
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 3, sm: 5 },
+            textAlign: 'center',
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 3,
+          }}
+        >
+          <CheckCircleOutlineOutlined
+            color="success"
+            sx={{
+              fontSize: 64,
+              mb: 2,
+            }}
+          />
+
+          <Typography
+            variant="h4"
+            component="h1"
+            fontWeight={700}
+            sx={{ color: '#1E3A5F' }}
+          >
+            Transferencia realizada
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            El dinero fue enviado correctamente.
+          </Typography>
+
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="body2" color="text.secondary">
+              Monto transferido
+            </Typography>
+
+            <Typography
+              variant="h4"
+              fontWeight={700}
+              sx={{ mt: 0.5, color: '#1E3A5F' }}
+            >
+              {formatCurrency(transferResult.amount)}
+            </Typography>
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+
+          <Typography variant="body2" color="text.secondary">
+            Nuevo saldo disponible
+          </Typography>
+
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            sx={{ mt: 0.5 }}
+          >
+            {formatCurrency(transferResult.newBalance)}
+          </Typography>
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            sx={{ mt: 4 }}
+          >
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              onClick={() => navigate('/')}
+              sx={{ minHeight: 52, fontWeight: 600 }}
+            >
+              Volver al inicio
+            </Button>
+
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              onClick={() => {
+                setDestinationAccountId('');
+                setAmount('');
+                setDescription('');
+                setTransferResult(null);
+              }}
+              sx={{ minHeight: 52, fontWeight: 600 }}
+            >
+              Hacer otra transferencia
+            </Button>
+          </Stack>
+        </Paper>
+      </Box>
+    );
+  }
   return (
     <Box
       sx={{
@@ -376,7 +511,7 @@ function TransferPage() {
 
       <Dialog
         open={isConfirmationOpen}
-        onClose={handleCloseConfirmation}
+        onClose={isSubmitting ? undefined : handleCloseConfirmation}
         fullWidth
         maxWidth="sm"
         aria-labelledby="transfer-confirmation-title"
@@ -463,6 +598,7 @@ function TransferPage() {
         >
           <Button
             onClick={handleCloseConfirmation}
+            disabled={isSubmitting}
             variant="outlined"
             size="large"
             sx={{
@@ -481,6 +617,7 @@ function TransferPage() {
             onClick={handleConfirmTransfer}
             variant="contained"
             size="large"
+            disabled={isSubmitting}
             sx={{
               minHeight: 48,
               width: {
@@ -490,7 +627,17 @@ function TransferPage() {
               fontWeight: 600,
             }}
           >
-            Confirmar transferencia
+            {isSubmitting ? (
+            <>
+              <CircularProgress
+                size={20}
+                color="inherit"
+                sx={{ mr: 1 }}
+              />
+              Procesando...
+            </>
+          ) : (
+            'Confirmar transferencia')}
           </Button>
         </DialogActions>
       </Dialog>
