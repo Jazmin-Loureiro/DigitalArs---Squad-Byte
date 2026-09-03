@@ -133,13 +133,19 @@ public class UserService : IUserService
     public async Task<UserResponseDto?> UpdateAsync(int id, UserUpdateDto dto)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(id);
-        if (user == null) return null;
+        if (user == null || !user.IsActive) return null;
 
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
 
-        if (!string.IsNullOrWhiteSpace(dto.CurrentPassword) && !string.IsNullOrWhiteSpace(dto.NewPassword))
+        // Validación estricta para HU-13: si viene NewPassword, CurrentPassword es obligatorio
+        if (!string.IsNullOrWhiteSpace(dto.NewPassword))
         {
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+            {
+                throw new ArgumentException("Debe ingresar su contraseña actual para poder cambiarla.");
+            }
+
             var isCurrentValid = _passwordHasher.VerifyPassword(dto.CurrentPassword, user.Password);
             if (!isCurrentValid)
             {
