@@ -71,5 +71,29 @@ public class AccountsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-}
 
+
+// POST: api/accounts/transfer - HU-16: Transfiere dinero a otra cuenta
+    [HttpPost("transfer")]
+    [ProducesResponseType(typeof(TransferResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Transfer([FromBody] TransferRequestDto request)
+    {
+        var userId = User.GetUserId();
+
+        try
+        {
+            var result = await _accountService.TransferAsync(userId, request);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+}
