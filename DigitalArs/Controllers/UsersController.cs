@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DigitalArs.Application.Common;
 using DigitalArs.Application.DTOs.Users;
@@ -10,7 +11,7 @@ namespace DigitalArs.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize] // Exige que la petición tenga un token JWT válido
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -20,7 +21,59 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
+    // ==========================================
+    // Ver y actualizar mis datos (Cualquier usuario autenticado)
+    // ==========================================
+
+    [HttpGet("me")]
+    public async Task<ActionResult<UserResponseDto>> GetMyProfile()
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdClaim, out var currentUserId))
+        {
+            return Unauthorized(new { message = "Token inválido o sin identificador de usuario." });
+        }
+
+        var profile = await _userService.GetByIdAsync(currentUserId);
+        if (profile == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado o inactivo." });
+        }
+
+        return Ok(profile);
+    }
+
+    [HttpPut("me")]
+    public async Task<ActionResult<UserResponseDto>> UpdateMyProfile([FromBody] UserUpdateDto dto)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdClaim, out var currentUserId))
+        {
+            return Unauthorized(new { message = "Token inválido o sin identificador de usuario." });
+        }
+
+        try
+        {
+            var updated = await _userService.UpdateAsync(currentUserId, dto);
+            if (updated == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado o inactivo." });
+            }
+
+            return Ok(updated);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // ==========================================
+    // Gestión de usuarios (Solo Admin)
+    // ==========================================
+
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<PagedResultDto<UserResponseDto>>> GetAll(
         [FromQuery] string? search,
         [FromQuery] int page = 1, 
@@ -31,6 +84,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserResponseDto>> GetById(int id)
     {
         var user = await _userService.GetByIdAsync(id);
@@ -43,6 +97,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserResponseDto>> Create([FromBody] UserCreateDto dto)
     {
         try
@@ -57,6 +112,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserResponseDto>> Update(int id, [FromBody] UserUpdateDto dto)
     {
         try
@@ -76,6 +132,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _userService.DeleteAsync(id);
