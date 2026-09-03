@@ -5,8 +5,10 @@ namespace DigitalArs.Application.Common;
 public class PagedResultDto<T>
 {
     public int CurrentPage { get; set; }
+    public int Page => CurrentPage;
     public int PageSize { get; set; }
     public int TotalCount { get; set; }
+    public int TotalItems => TotalCount;
     public int TotalPages { get; set; }
     public bool HasPreviousPage => CurrentPage > 1;
     public bool HasNextPage => CurrentPage < TotalPages;
