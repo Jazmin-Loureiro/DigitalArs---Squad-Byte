@@ -118,13 +118,16 @@ namespace DigitalArs
                 };
             });
 
-            // 9. Configuración de CORS para permitir solicitudes desde el frontend React
+            // 10. Configuración de CORS desacoplada mediante appsettings.json
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                ?? new[] { "http://localhost:5173" };
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("FrontendPolicy", policy =>
                 {
                     policy
-                        .WithOrigins("http://localhost:5173")
+                        .WithOrigins(allowedOrigins)
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
