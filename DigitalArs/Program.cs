@@ -22,6 +22,9 @@ using Mapster;
 // Importación del filtro middleware para autovalidar DTOs en los controladores y retornar 400 Bad Request
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
+// Importación del middleware de manejo global de excepciones (HU-18)
+using DigitalArs.Middleware;
+
 // Importación de las interfaces de servicios de la capa Application (IPasswordHasher, IJwtProvider, IAuthService)
 using DigitalArs.Application.Interfaces;
 
@@ -89,10 +92,14 @@ namespace DigitalArs
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
 
-            // 8. Registro del servicio de gestión y CRUD de usuarios
+            // 8. Registro del servicio de transacciones (HU-17)
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
+
+
+            // 9. Registro del servicio de gestión y CRUD de usuarios
             builder.Services.AddScoped<IUserService, UserService>();
 
-            // 9. Configuración del esquema de autenticación JWT Bearer
+            // 10. Configuración del esquema de autenticación JWT Bearer
             var secretKey = builder.Configuration["JwtSettings:SecretKey"]
                 ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada en appsettings.json");
 
@@ -118,7 +125,7 @@ namespace DigitalArs
                 };
             });
 
-            // 10. Configuración de CORS desacoplada mediante appsettings.json
+            // 11. Configuración de CORS desacoplada mediante appsettings.json
             var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
                 ?? new[] { "http://localhost:5173" };
 
@@ -136,6 +143,11 @@ namespace DigitalArs
             var app = builder.Build();
 
             // Configuración del pipeline de solicitudes HTTP
+
+            // HU-18: Debe ser el PRIMERO en el pipeline para capturar cualquier excepción
+            // que ocurra en middlewares o controladores posteriores
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();

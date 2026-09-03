@@ -1,4 +1,4 @@
-﻿using DigitalArs.Application.DTOs.Accounts;
+using DigitalArs.Application.DTOs.Accounts;
 using DigitalArs.Application.Interfaces;
 using DigitalArs.Application.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -56,20 +56,8 @@ public class AccountsController : ControllerBase
     public async Task<IActionResult> Deposit([FromBody] DepositRequestDto request)
     {
         var userId = User.GetUserId();
-
-        try
-        {
-            var result = await _accountService.DepositAsync(userId, request);
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _accountService.DepositAsync(userId, request);
+        return Ok(result);
     }
 
 
@@ -81,19 +69,7 @@ public class AccountsController : ControllerBase
     public async Task<IActionResult> Transfer([FromBody] TransferRequestDto request)
     {
         var userId = User.GetUserId();
-
-        try
-        {
-            var result = await _accountService.TransferAsync(userId, request);
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _accountService.TransferAsync(userId, request);
+        return Ok(result);
     }
 }
