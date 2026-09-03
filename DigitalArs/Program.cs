@@ -89,7 +89,10 @@ namespace DigitalArs
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
 
-            // 8. Configuración del esquema de autenticación JWT Bearer
+            // 8. Registro del servicio de gestión y CRUD de usuarios
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            // 9. Configuración del esquema de autenticación JWT Bearer
             var secretKey = builder.Configuration["JwtSettings:SecretKey"]
                 ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada en appsettings.json");
 
@@ -115,13 +118,16 @@ namespace DigitalArs
                 };
             });
 
-            // 9. Configuración de CORS para permitir solicitudes desde el frontend React
+            // 10. Configuración de CORS desacoplada mediante appsettings.json
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                ?? new[] { "http://localhost:5173" };
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("FrontendPolicy", policy =>
                 {
                     policy
-                        .WithOrigins("http://localhost:5173")
+                        .WithOrigins(allowedOrigins)
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
