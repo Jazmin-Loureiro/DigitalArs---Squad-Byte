@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DigitalArs.Application.Common;
@@ -52,20 +51,13 @@ public class UsersController : ControllerBase
             return Unauthorized(new { message = "Token inválido o sin identificador de usuario." });
         }
 
-        try
+        var updated = await _userService.UpdateAsync(currentUserId, dto);
+        if (updated == null)
         {
-            var updated = await _userService.UpdateAsync(currentUserId, dto);
-            if (updated == null)
-            {
-                return NotFound(new { message = "Usuario no encontrado o inactivo." });
-            }
+            return NotFound(new { message = "Usuario no encontrado o inactivo." });
+        }
 
-            return Ok(updated);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        return Ok(updated);
     }
 
     // ==========================================
@@ -100,35 +92,21 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserResponseDto>> Create([FromBody] UserCreateDto dto)
     {
-        try
-        {
-            var created = await _userService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { message = ex.Message });
-        }
+        var created = await _userService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<UserResponseDto>> Update(int id, [FromBody] UserUpdateDto dto)
     {
-        try
+        var updated = await _userService.UpdateAsync(id, dto);
+        if (updated == null)
         {
-            var updated = await _userService.UpdateAsync(id, dto);
-            if (updated == null)
-            {
-                return NotFound(new { message = $"Usuario con id {id} no encontrado." });
-            }
+            return NotFound(new { message = $"Usuario con id {id} no encontrado." });
+        }
 
-            return Ok(updated);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        return Ok(updated);
     }
 
     [HttpDelete("{id:int}")]

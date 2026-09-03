@@ -22,6 +22,9 @@ using Mapster;
 // Importación del filtro middleware para autovalidar DTOs en los controladores y retornar 400 Bad Request
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
+// Importación del middleware de manejo global de excepciones (HU-18)
+using DigitalArs.Middleware;
+
 // Importación de las interfaces de servicios de la capa Application (IPasswordHasher, IJwtProvider, IAuthService)
 using DigitalArs.Application.Interfaces;
 
@@ -136,6 +139,11 @@ namespace DigitalArs
             var app = builder.Build();
 
             // Configuración del pipeline de solicitudes HTTP
+
+            // HU-18: Debe ser el PRIMERO en el pipeline para capturar cualquier excepción
+            // que ocurra en middlewares o controladores posteriores
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
