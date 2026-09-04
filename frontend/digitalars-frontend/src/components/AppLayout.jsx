@@ -5,7 +5,7 @@ import {
   HomeOutlined,
   LogoutOutlined,
   ReceiptLongOutlined,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 import {
   AppBar,
@@ -13,130 +13,104 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
-  Button,
+  IconButton,
   Divider,
   Drawer,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  ListSubheader,
   Toolbar,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
-import { useAuth } from '../hooks/useAuth';
+const DRAWER_WIDTH = 260; // De 240 a 260 para que no corte texto
 
-// Ancho fijo de la navegación lateral en desktop.
-const DRAWER_WIDTH = 240;
-
-/**
- * Layout principal para usuarios autenticados.
- *
- * Desktop:
- * - navegación lateral persistente;
- * - identidad del usuario;
- * - acción explícita para cerrar sesión.
- *
- * Mobile:
- * - header simplificado;
- * - navegación inferior con icono + texto.
- *
- * Outlet representa el contenido de la página activa.
- */
 function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
 
-/**
- * Destinos principales disponibles para todos los usuarios autenticados.
- *
- * Depositar y Transferir no forman parte de esta navegación porque
- * son acciones financieras que estarán disponibles desde Inicio.
- */
-const navigationItems = [
-  {
-    label: 'Inicio',
-    path: '/',
-    icon: <HomeOutlined />,
-  },
-  {
-    label: 'Movimientos',
-    path: '/movimientos',
-    icon: <ReceiptLongOutlined />,
-  },
-  {
-    label: 'Mi perfil',
-    path: '/perfil',
-    icon: <AccountCircleOutlined />,
-  },
-];
+  const isAdmin = user?.roleName?.toLowerCase() === "admin";
 
-/**
- * Los administradores reciben un destino adicional en la navegación.
- * La visibilidad del enlace mejora la experiencia, pero la seguridad
- * real sigue estando en ProtectedRoute: ocultar un enlace por sí solo
- * no impide que alguien intente acceder directamente a una URL.
- */
-if (user?.roleName?.toLowerCase() === 'admin') {
-  navigationItems.push({
-    label: 'Administración',
-    path: '/admin',
+  const personalItems = [
+    { label: "Inicio", path: "/", icon: <HomeOutlined /> },
+    {
+      label: "Movimientos",
+      path: "/movimientos",
+      icon: <ReceiptLongOutlined />,
+    },
+    { label: "Mi perfil", path: "/perfil", icon: <AccountCircleOutlined /> },
+  ];
+
+  // Distinción de etiquetas según resolución
+  const adminDesktopItem = {
+    label: "Gestión de Usuarios", // En vez de repetir "Administración"
+    path: "/admin",
     icon: <AdminPanelSettingsOutlined />,
-  });
-}
-
-  /**
-   * Cierra la sesión mediante AuthProvider y devuelve al usuario
-   * al Login. El uso de replace evita conservar la página privada
-   * anterior como destino inmediato del botón "Atrás".
-   */
-  const handleLogout = () => {
-    logout();
-    navigate('/login', { replace: true });
   };
 
-  /**
-   * Determina qué destino de navegación corresponde a la ruta actual.
-   * Esto permite mantener un estado seleccionado visible.
-   */
-  const currentPath = navigationItems.some(
-    (item) => item.path === location.pathname
+  const adminMobileItem = {
+    label: "Admin",
+    path: "/admin",
+    icon: <AdminPanelSettingsOutlined />,
+  };
+
+  const mobileNavItems = isAdmin
+    ? [...personalItems, adminMobileItem]
+    : personalItems;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const currentPath = mobileNavItems.some(
+    (item) => item.path === location.pathname,
   )
     ? location.pathname
-    : '/';
+    : "/";
 
-  /**
-   * Contenido compartido de la navegación desktop.
-   * Cada opción utiliza texto además de icono para reducir ambigüedad.
-   */
+  const renderNavButtons = (items) =>
+    items.map((item) => {
+      const isActive = location.pathname === item.path;
+      return (
+        <ListItemButton
+          key={item.path}
+          selected={isActive}
+          onClick={() => navigate(item.path)}
+          aria-current={isActive ? "page" : undefined}
+          sx={{ minHeight: 48, mb: 0.5, borderRadius: 2 }}
+        >
+          <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+          <ListItemText
+            primary={item.label}
+            slotProps={{
+              primary: {
+                fontSize: "0.92rem",
+                fontWeight: isActive ? 600 : 500,
+              },
+            }}
+          />
+        </ListItemButton>
+      );
+    });
+
   const desktopNavigation = (
-    <Box
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Identidad de Digital ARS */}
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          px: 3,
-          py: 3,
-        }}
+        sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 3, py: 3 }}
       >
         <AccountBalanceWalletOutlined color="primary" />
-
         <Typography
           variant="h6"
           component="span"
           fontWeight={700}
-          sx={{ color: '#1E3A5F' }}
+          sx={{ color: "#1E3A5F" }}
         >
           Digital ARS
         </Typography>
@@ -144,186 +118,234 @@ if (user?.roleName?.toLowerCase() === 'admin') {
 
       <Divider />
 
-      {/* Navegación principal */}
+      {/* Navegación Desktop: Administración arriba primero */}
       <List sx={{ px: 1.5, py: 2 }}>
-        {navigationItems.map((item) => {
-          const isActive = location.pathname === item.path;
-
-          return (
-            <ListItemButton
-              key={item.path}
-              selected={isActive}
-              onClick={() => navigate(item.path)}
-              aria-current={isActive ? 'page' : undefined}
+        {isAdmin && (
+          <>
+            <ListSubheader
+              disableSticky
               sx={{
-                minHeight: 48,
-                mb: 0.5,
-                borderRadius: 2,
+                bgcolor: "transparent",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                color: "text.secondary",
+                px: 1,
+                lineHeight: "28px",
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                {item.icon}
-              </ListItemIcon>
-
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          );
-        })}
+              Administración
+            </ListSubheader>
+            {renderNavButtons([adminDesktopItem])}
+            <Divider sx={{ my: 1.5, mx: 1 }} />
+            <ListSubheader
+              disableSticky
+              sx={{
+                bgcolor: "transparent",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                color: "text.secondary",
+                px: 1,
+                lineHeight: "28px",
+              }}
+            >
+              Mi Cuenta
+            </ListSubheader>
+          </>
+        )}
+        {renderNavButtons(personalItems)}
       </List>
 
-      {/* Empuja la identidad y logout hacia el pie del sidebar. */}
-      <Box sx={{ mt: 'auto' }}>
+      {/* Pie del Sidebar Desktop: Perfil + Botón sutil de Cerrar Sesión */}
+      {/* Pie del Sidebar Desktop: Usuario + Salida */}
+      <Box sx={{ mt: "auto" }}>
         <Divider />
-
-        <Box sx={{ p: 2 }}>
-          <Box
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+          }}
+        >
+          <Avatar
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              mb: 2,
+              width: 38,
+              height: 38,
+              bgcolor: "primary.main",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+              flexShrink: 0,
             }}
           >
-            <Avatar sx={{ width: 40, height: 40 }}>
-              {user?.firstName?.charAt(0)}
-              {user?.lastName?.charAt(0)}
-            </Avatar>
+            {user?.firstName?.charAt(0)}
+            {user?.lastName?.charAt(0)}
+          </Avatar>
 
-            <Box
-              sx={{
-                minWidth: 0,
-                flex: 1,
-                textAlign: 'left',
-              }}
+          <Box sx={{ minWidth: 0, flexGrow: 1, textAlign: "left" }}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              noWrap
+              sx={{ color: "text.primary", lineHeight: 1.2 }}
             >
-              <Typography fontWeight={600} noWrap>
-                {user?.firstName} {user?.lastName}
-              </Typography>
-
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                noWrap
-              >
-                {user?.email}
-              </Typography>
-            </Box>
+              {user?.firstName} {user?.lastName}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              noWrap
+              display="block"
+              sx={{ mt: 0.2 }}
+            >
+              {user?.email}
+            </Typography>
           </Box>
 
-          <Button
-            fullWidth
-            startIcon={<LogoutOutlined />}
+          <IconButton
+            size="small"
+            title="Cerrar sesión"
             onClick={handleLogout}
             sx={{
-              justifyContent: 'flex-start',
-              minHeight: 44,
+              flexShrink: 0,
+              color: "text.secondary",
+              "&:hover": {
+                color: "error.main",
+                bgcolor: "error.lighter",
+              },
             }}
           >
-            Cerrar sesión
-          </Button>
+            <LogoutOutlined fontSize="small" />
+          </IconButton>
         </Box>
       </Box>
     </Box>
   );
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* Sidebar desktop. Se oculta en pantallas pequeñas. */}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        width: "100%",
+        overflowX: "hidden",
+      }}
+    >
+      {/* Sidebar Desktop */}
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', md: 'block' },
+          display: { xs: "none", md: "block" },
           width: DRAWER_WIDTH,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
-            boxSizing: 'border-box',
+            boxSizing: "border-box",
           },
         }}
       >
         {desktopNavigation}
       </Drawer>
 
-      {/* Header mobile. */}
+      {/* Header Mobile: Limpio */}
       <AppBar
         position="fixed"
         color="inherit"
         elevation={0}
         sx={{
-          display: { xs: 'block', md: 'none' },
-          borderBottom: '1px solid',
-          borderColor: 'divider',
+          display: { xs: "block", md: "none" },
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          bgcolor: "background.paper",
+          zIndex: (theme) => theme.zIndex.appBar,
         }}
       >
-        <Toolbar>
-          <AccountBalanceWalletOutlined
-            color="primary"
-            sx={{ mr: 1 }}
-          />
-
+        <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <AccountBalanceWalletOutlined color="primary" />
           <Typography
             variant="h6"
             component="span"
             fontWeight={700}
-            sx={{
-              color: '#1E3A5F',
-              flexGrow: 1,
-            }}
+            sx={{ color: "#1E3A5F" }}
           >
             Digital ARS
           </Typography>
-
-          {/*
-           * En mobile usamos una acción explícita en lugar de hacer
-           * que el avatar cierre sesión, evitando una interacción ambigua.
-           */}
-          <Button
-            onClick={handleLogout}
-            startIcon={<LogoutOutlined />}
-            size="small"
-          >
-            Salir
-          </Button>
         </Toolbar>
       </AppBar>
 
-      {/* Área donde React Router renderiza la página activa. */}
+      {/* Contenedor Principal: Flexbox con Footer Sticky en Desktop */}
       <Box
         component="main"
         sx={{
           ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
-          pt: { xs: 8, md: 0 },
-          pb: { xs: 9, md: 0 },
-          minHeight: '100vh',
-          pd: { xs:10, md: 0,}
+          pt: { xs: 8, md: 3 },
+          pb: { xs: 10, md: 0 },
+          px: { xs: 1.5, sm: 3 },
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          boxSizing: "border-box",
+          width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
+          overflowX: "hidden",
         }}
       >
-        <Outlet />
+        {/* Vista activa */}
+        <Box sx={{ flexGrow: 1, pb: { md: 4 } }}>
+          <Outlet />
+        </Box>
+
+        {/* Footer institucional discreto */}
+        <Box
+          component="footer"
+          sx={{
+            display: { xs: "none", md: "flex" },
+            py: 2,
+            mt: "auto",
+            justifyContent: "space-between",
+            alignItems: "center",
+            opacity: 0.6,
+          }}
+        >
+          <Typography variant="caption" color="text.secondary">
+            © 2026 Digital ARS · Todos los derechos reservados
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            v1.0.0
+          </Typography>
+        </Box>
       </Box>
 
-      {/* Navegación inferior para mobile. */}
+      {/* Navegación Inferior Mobile Fija */}
       <BottomNavigation
         value={currentPath}
-        onChange={(_, newPath) => navigate(newPath)}
+        onChange={(e, newPath) => {
+          e.currentTarget?.blur?.(); // <- Quita el foco del botón tocado
+          navigate(newPath);
+        }}
         showLabels
         sx={{
-          display: { xs: 'flex', md: 'none' },
-          position: 'fixed',
+          display: { xs: "flex", md: "none" },
+          position: "fixed",
           left: 0,
           right: 0,
           bottom: 0,
-          height: 72,
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          zIndex: (theme) => theme.zIndex.appBar,
+          height: 64,
+          borderTop: "1px solid",
+          borderColor: "divider",
+          bgcolor: "background.paper",
+          zIndex: (theme) => theme.zIndex.appBar + 1,
         }}
       >
-        {navigationItems.map((item) => (
+        {mobileNavItems.map((item) => (
           <BottomNavigationAction
             key={item.path}
             label={item.label}
             value={item.path}
             icon={item.icon}
+            sx={{ minWidth: 0, px: 0.5 }}
           />
         ))}
       </BottomNavigation>
