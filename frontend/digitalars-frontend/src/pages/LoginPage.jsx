@@ -148,8 +148,8 @@ function LoginPage() {
             </Typography>
 
             <Typography
-                color="text.secondary"
-                sx={{ mt: 1, textAlign: 'center' }}
+              color="text.secondary"
+              sx={{ mt: 1, textAlign: 'center' }}
             >
               Ingresá a tu cuenta
             </Typography>

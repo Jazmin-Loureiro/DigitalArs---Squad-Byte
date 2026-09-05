@@ -1,10 +1,7 @@
 import {
   AccountBalanceWalletOutlined,
   AddOutlined,
-  AddRounded,
   ArrowForwardOutlined,
-  ArrowOutwardRounded,
-  CallReceivedRounded,
   ReceiptLongOutlined,
   RefreshOutlined,
   VisibilityOffOutlined,
@@ -26,6 +23,12 @@ import { useAuth } from '../hooks/useAuth';
 import accountService from '../services/accountService';
 import transactionService from '../services/transactionService';
 import { useNavigate } from 'react-router-dom';
+import {
+  formatCurrency,
+  getTransactionPresentation,
+  getTransactionTitle,
+  getTransactionSubtext,
+} from '../utils/transactionUtils';
 
 /**
  * Dashboard principal de Digital ARS.
@@ -152,94 +155,8 @@ useEffect(() => {
     isMounted = false;
   };
 }, []);
-  /**
-   * Formatea el saldo utilizando la convención monetaria argentina.
-   *
-   * Ejemplo:
-   * 250000.5 → $ 250.000,50
-   */
-  const formatCurrency = (amount) =>
-    new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 2,
-    }).format(amount ?? 0);
-
-      /**
-   * Devuelve la presentación visual correspondiente al tipo de movimiento.
-   * La dirección del monto se determina a partir del tipo recibido del backend.
-   */
-  const getTransactionPresentation = (transaction) => {
-    switch (transaction.type) {
-      case 'Deposit':
-        return {
-          label: 'Depósito',
-          sign: '+',
-          Icon: AddRounded,
-          iconColor: '#15803D',
-          iconBackground: '#DCFCE7',
-          amountColor: '#15803D',
-        };
-
-      case 'TransferIn':
-        return {
-          label: 'Transferencia recibida',
-          sign: '+',
-          Icon: CallReceivedRounded,
-          iconColor: '#0369A1',
-          iconBackground: '#E0F2FE',
-          amountColor: '#15803D',
-        };
-
-      case 'TransferOut':
-        return {
-          label: 'Transferencia enviada',
-          sign: '-',
-          Icon: ArrowOutwardRounded,
-          iconColor: '#0369A1',
-          iconBackground: '#E0F2FE',
-          amountColor: 'text.primary',
-        };
-
-      default:
-        return {
-          label: 'Movimiento',
-          sign: '',
-          Icon: ArrowOutwardRounded,
-          iconColor: '#475569',
-          iconBackground: '#F1F5F9',
-          amountColor: 'text.primary',
-        };
-    }
-  };
-
-    /**
-   * Formatea la fecha del movimiento con un lenguaje más cercano
-   * para facilitar la lectura rápida del Dashboard.
-   */
-  const formatTransactionDate = (date) => {
-    const transactionDate = new Date(date);
-    const today = new Date();
-
-    const isToday =
-      transactionDate.getDate() === today.getDate() &&
-      transactionDate.getMonth() === today.getMonth() &&
-      transactionDate.getFullYear() === today.getFullYear();
-
-    const time = transactionDate.toLocaleTimeString('es-AR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    if (isToday) {
-      return `Hoy, ${time}`;
-    }
-
-    return transactionDate.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: 'short',
-    });
-  };
+  // formatCurrency, getTransactionPresentation y formatTransactionDate
+  // se importan desde utils/transactionUtils.js para evitar duplicación.
 
   return (
     <Box
@@ -522,6 +439,8 @@ useEffect(() => {
               const presentation =
                 getTransactionPresentation(transaction);
               const TransactionIcon = presentation.Icon;
+              const title = getTransactionTitle(transaction);
+              const subtext = getTransactionSubtext(transaction);
 
               return (
                 <Box
@@ -530,7 +449,7 @@ useEffect(() => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: { xs: 1.5, sm: 2 },
-                    py: { xs: 1.75, sm: 1.35 },
+                    py: { xs: 1.75, sm: 1.5 },
                     borderBottom:
                       index < transactions.length - 1
                         ? '1px solid'
@@ -538,7 +457,7 @@ useEffect(() => {
                     borderColor: 'divider',
                   }}
                 >
-                  {/* El ícono ayuda a reconocer rápidamente el tipo de operación. */}
+                  {/* Badge circular con borde tenue */}
                   <Box
                     sx={{
                       width: { xs: 44, sm: 40 },
@@ -548,13 +467,16 @@ useEffect(() => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      border: '2px solid',
+                      borderColor:
+                        presentation.borderColor || presentation.iconColor,
                       bgcolor: presentation.iconBackground,
                       color: presentation.iconColor,
                     }}
                   >
                     <TransactionIcon fontSize="small" />
                   </Box>
-                  {/* Descripción y fecha del movimiento. */}
+                  {/* Título y subtexto (concepto • fecha) */}
                   <Box
                     sx={{
                       flex: 1,
@@ -568,33 +490,22 @@ useEffect(() => {
                       sx={{
                         color: '#1E3A5F',
                         lineHeight: 1.3,
+                        fontSize: { xs: '0.9rem', sm: '0.95rem' },
                       }}
                     >
-                      {presentation.label}
+                      {title}
                     </Typography>
 
-                    {/* El concepto se muestra solo cuando aporta información adicional. */}
-                    {transaction.type !== 'Deposit' && transaction.concept && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        noWrap
-                        sx={{ mt: 0.2 }}
-                      >
-                        {transaction.concept}
-                      </Typography>
-                    )}
-
-                    {/* La fecha mantiene su propia línea para mejorar la jerarquía visual. */}
                     <Typography
-                      variant="caption"
+                      variant="body2"
                       color="text.secondary"
+                      noWrap
                       sx={{
-                        display: 'block',
-                        mt: 0.15,
+                        fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                        mt: 0.2,
                       }}
                     >
-                      {formatTransactionDate(transaction.createdDate)}
+                      {subtext}
                     </Typography>
                   </Box>
                   {/* El signo y el color diferencian ingresos y egresos. */}
@@ -605,6 +516,7 @@ useEffect(() => {
                       textAlign: 'right',
                       fontWeight: 700,
                       color: presentation.amountColor,
+                      fontSize: { xs: '0.95rem', sm: '1rem' },
                     }}
                   >
                     {presentation.sign}
