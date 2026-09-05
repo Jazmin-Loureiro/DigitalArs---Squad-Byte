@@ -43,6 +43,16 @@ const userService = {
     const response = await api.delete(`/users/${id}`);
     return response.data;
   },
+
+  async getMyProfile() {
+    const response = await api.get("/users/me");
+    return response.data;
+  },
+
+  async updateMyProfile(userData) {
+    const response = await api.put("/users/me", userData);
+    return response.data;
+  },
 };
 
 export default userService;
