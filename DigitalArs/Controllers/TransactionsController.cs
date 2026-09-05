@@ -1,7 +1,8 @@
-﻿using DigitalArs.Application.Common;                     
+using DigitalArs.Application.Common;                     
 using DigitalArs.Application.DTOs.Transactions;          // TransactionResponseDto, TransactionFilterDto
 using DigitalArs.Application.Extensions;                // User.GetUserId()
 using DigitalArs.Application.Interfaces;                // ITransactionService
+using DigitalArs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,8 @@ namespace DigitalArs.Controllers;
 /// Controlador para la consulta de historial de transacciones (HU‑17).
 /// resultado del servicio.
 
+// HU-19: Tag para agrupar los endpoints de transacciones en Swagger UI
+[Tags("Transactions")]
 [Authorize]                                   // Requiere JWT
 [ApiController]                               // Convención API
 [Route("api/[controller]")]                    // Ruta base → /api/transactions
@@ -30,6 +33,8 @@ public class TransactionsController : ControllerBase
     /// <returns>Resultado paginado de transacciones.</returns>
     [HttpGet("me")]
     [ProducesResponseType(typeof(PagedResultDto<TransactionResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMyTransactions([FromQuery] TransactionFilterDto filter)
     {
         // 1️⃣ Obtener el Id del usuario a partir del JWT
@@ -39,7 +44,7 @@ public class TransactionsController : ControllerBase
         //    y pagina los resultados.
         var result = await _transactionService.GetMyTransactionsAsync(userId, filter);
 
-        // 3️⃣ Devolver 200 OK con el payload paginado.
+        // 3️⃣ Devolver 200 OK con el payload paginado.
         return Ok(result);
     }
 }
