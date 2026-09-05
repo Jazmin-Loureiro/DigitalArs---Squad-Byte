@@ -46,6 +46,15 @@ using Microsoft.AspNetCore.Authorization;
 // Filtros para aplicar requisitos de autorización a nivel de controlador
 using Microsoft.AspNetCore.Mvc.Authorization;
 
+// Modelos OpenAPI para definir esquemas de seguridad en Swagger (HU-19)
+using Microsoft.OpenApi;
+
+// Acceso a los esquemas de autenticación registrados (Bearer) para el transformer de OpenAPI
+using Microsoft.AspNetCore.Authentication;
+
+// Transformer que agrega el esquema Bearer JWT al documento OpenAPI (HU-19)
+using DigitalArs.OpenApi;
+
 namespace DigitalArs
 {
     public class Program
@@ -68,8 +77,12 @@ namespace DigitalArs
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
-            // Configuración de OpenAPI para documentación y exploración de endpoints
-            builder.Services.AddOpenApi();
+            // HU-19: Configuración de OpenAPI con esquema de seguridad Bearer JWT
+            // El DocumentTransformer agrega la metadata de la API y el botón "Authorize" en Swagger UI
+            builder.Services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+            });
 
             // 2. Registro de repositorios genéricos y Unit of Work
             builder.Services.AddInfrastructureServices();
@@ -123,7 +136,38 @@ namespace DigitalArs
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
-            });
+
+                // Eventos para interceptar la llegada del token en tiempo de ejecución
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // Poner punto de interrupción AQUÍ (Línea A)
+                        var authHeader = context.Request.Headers["Authorization"].ToString();
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        // Poner punto de interrupción AQUÍ (Línea B)
+                        var user = context.Principal;
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        // Poner punto de interrupción AQUÍ (Línea C)
+                        var exception = context.Exception;
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        // Poner punto de interrupción AQUÍ (Línea D)
+                        var error = context.Error;
+                        var desc = context.ErrorDescription;
+                        return Task.CompletedTask;
+                    }
+                };
+            
+        });
 
             // 11. Configuración de CORS desacoplada mediante appsettings.json
             var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
@@ -148,11 +192,13 @@ namespace DigitalArs
             // que ocurra en middlewares o controladores posteriores
             app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-            if (app.Environment.IsDevelopment())
+            // HU-19: Exponer el documento OpenAPI y Swagger UI en todos los entornos
+            app.MapOpenApi();
+            app.UseSwaggerUI(options =>
             {
-                app.MapOpenApi();
-                app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "DigitalArs V1"));
-            }
+                options.SwaggerEndpoint("/openapi/v1.json", "DigitalArs V1");
+                options.RoutePrefix = "swagger"; // Accesible en /swagger
+            });
 
             app.UseHttpsRedirection();
 

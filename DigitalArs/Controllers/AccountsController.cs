@@ -1,12 +1,15 @@
 using DigitalArs.Application.DTOs.Accounts;
 using DigitalArs.Application.Interfaces;
 using DigitalArs.Application.Extensions;
+using DigitalArs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DigitalArs.Controllers;
 
 // Controlador para la gestión de cuentas y consultas de saldo
+// HU-19: Tag para agrupar los endpoints de cuentas en Swagger UI
+[Tags("Accounts")]
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
@@ -22,7 +25,8 @@ public class AccountsController : ControllerBase
     // GET: api/accounts/me - Permite al usuario autenticado ver el estado y saldo de su cuenta
     [HttpGet("me")]
     [ProducesResponseType(typeof(AccountResponseDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMyAccount()
     {
         var userId = User.GetUserId();
@@ -38,7 +42,9 @@ public class AccountsController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(AccountResponseDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAccountById(int id)
     {
         var account = await _accountService.GetAccountByIdAsync(id);
@@ -51,8 +57,9 @@ public class AccountsController : ControllerBase
     // POST: api/accounts/deposit : Deposita dinero en la cuenta del usuario autenticado
     [HttpPost("deposit")]
     [ProducesResponseType(typeof(DepositResponseDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Deposit([FromBody] DepositRequestDto request)
     {
         var userId = User.GetUserId();
@@ -64,8 +71,9 @@ public class AccountsController : ControllerBase
 // POST: api/accounts/transfer - HU-16: Transfiere dinero a otra cuenta
     [HttpPost("transfer")]
     [ProducesResponseType(typeof(TransferResponseDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Transfer([FromBody] TransferRequestDto request)
     {
         var userId = User.GetUserId();
