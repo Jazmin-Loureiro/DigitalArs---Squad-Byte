@@ -200,10 +200,13 @@ namespace DigitalArs
                 options.RoutePrefix = "swagger"; // Accesible en /swagger
             });
 
-            app.UseHttpsRedirection();
-
-            // Permitir solicitudes desde el frontend React
+            // Permitir solicitudes desde el frontend React (debe ir antes de UseHttpsRedirection y UseAuthentication)
             app.UseCors("FrontendPolicy");
+
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
 
             // Middleware de autenticación (identifica quién es el usuario mediante el token)
             // DEBE ejecutarse obligatoriamente antes de UseAuthorization

@@ -1,6 +1,7 @@
-﻿using DigitalArs.Application.Common;
+using DigitalArs.Application.Common;
 using DigitalArs.Application.DTOs.Transactions;
 using DigitalArs.Application.Interfaces;
+using DigitalArs.Domain.Entities;
 
 namespace DigitalArs.Application.Services;
 
@@ -60,11 +61,46 @@ public class TransactionService : ITransactionService
         var page = filter.Page < 1 ? 1 : filter.Page;
         var pageSize = filter.PageSize < 1 ? 10 : filter.PageSize;
 
-        // 5. Proyección a DTO para optimizar y evitar N+1
-        var items = query
+        var pagedTransactions = query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(t => new TransactionResponseDto
+            .ToList();
+
+        // 5. Cargar información de los usuarios destinatarios/orígenes a través de ToAccountId
+        var toAccountIds = pagedTransactions
+            .Where(t => t.ToAccountId.HasValue)
+            .Select(t => t.ToAccountId!.Value)
+            .Distinct()
+            .ToList();
+
+        var accountUserMap = new Dictionary<int, User>();
+        if (toAccountIds.Any())
+        {
+            var targetAccounts = await _unitOfWork.Accounts.FindAsync(a => toAccountIds.Contains(a.Id));
+            var targetUserIds = targetAccounts.Select(a => a.UserId).Distinct().ToList();
+            if (targetUserIds.Any())
+            {
+                var targetUsers = await _unitOfWork.Users.FindAsync(u => targetUserIds.Contains(u.Id));
+                var userDict = targetUsers.ToDictionary(u => u.Id);
+
+                foreach (var acc in targetAccounts)
+                {
+                    if (userDict.TryGetValue(acc.UserId, out var u))
+                    {
+                        accountUserMap[acc.Id] = u;
+                    }
+                }
+            }
+        }
+
+        // 6. Proyección a DTO incluyendo el nombre y email del destinatario
+        var items = pagedTransactions.Select(t =>
+        {
+            User? targetUser = t.ToAccountId.HasValue && accountUserMap.TryGetValue(t.ToAccountId.Value, out var u) ? u : null;
+            string? destFullName = targetUser != null ? $"{targetUser.FirstName} {targetUser.LastName}".Trim() : null;
+            string? destEmail = targetUser?.Email;
+
+            return new TransactionResponseDto
             {
                 Id = t.Id,
                 Amount = t.Amount,
@@ -72,9 +108,11 @@ public class TransactionService : ITransactionService
                 CreatedDate = t.CreatedDate,
                 Type = t.Type.ToString(),
                 AccountId = t.AccountId,
-                ToAccountId = t.ToAccountId
-            })
-            .ToList();
+                ToAccountId = t.ToAccountId,
+                DestinationAccountEmail = destEmail,
+                DestinationUserFullName = destFullName
+            };
+        }).ToList();
 
         return new PagedResultDto<TransactionResponseDto>(items, totalItems, page, pageSize);
     }

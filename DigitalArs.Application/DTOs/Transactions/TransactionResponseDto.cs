@@ -1,4 +1,4 @@
-﻿namespace DigitalArs.Application.DTOs.Transactions;
+namespace DigitalArs.Application.DTOs.Transactions;
 
 
 /// DTO de respuesta para representar un movimiento en el historial de transacciones (HU-17).
@@ -13,5 +13,6 @@ public class TransactionResponseDto
     public int AccountId { get; set; }
     public int? ToAccountId { get; set; }
     public string? DestinationAccountEmail { get; set; }
+    public string? DestinationUserFullName { get; set; }
 }
 
