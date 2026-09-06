@@ -132,7 +132,7 @@ function LoginPage() {
             >
               <AccountBalanceWalletOutlined
                 sx={{
-                  color: 'white',
+                  color: 'primary.contrastText',
                   fontSize: 32,
                 }}
               />
@@ -142,7 +142,7 @@ function LoginPage() {
               variant="h4"
               component="h1"
               fontWeight={700}
-              sx={{ color: '#1E3A5F' }}
+              color="text.primary"
             >
               Digital ARS
             </Typography>

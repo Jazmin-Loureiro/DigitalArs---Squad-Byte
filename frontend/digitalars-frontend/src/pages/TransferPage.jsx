@@ -225,7 +225,7 @@ function TransferPage() {
             variant="h4"
             component="h1"
             fontWeight={700}
-            sx={{ color: '#1E3A5F' }}
+            color="text.primary"
           >
             Transferencia realizada
           </Typography>
@@ -242,7 +242,7 @@ function TransferPage() {
             <Typography
               variant="h4"
               fontWeight={700}
-              sx={{ mt: 0.5, color: '#1E3A5F' }}
+              sx={{ mt: 0.5, color: 'text.primary' }}
             >
               {formatCurrency(transferResult.amount)}
             </Typography>
@@ -353,7 +353,7 @@ function TransferPage() {
           component="h1"
           fontWeight={700}
           sx={{
-            color: '#1E3A5F',
+            color: 'text.primary',
             fontSize: {
               xs: '1.75rem',
               sm: '2.125rem',
@@ -401,7 +401,7 @@ function TransferPage() {
             variant="h6"
             component="h2"
             fontWeight={600}
-            sx={{ color: '#1E3A5F' }}
+            color="text.primary"
           >
             Datos de la transferencia
           </Typography>
@@ -519,7 +519,7 @@ function TransferPage() {
         <DialogTitle
           id="transfer-confirmation-title"
           sx={{
-            color: '#1E3A5F',
+            color: 'text.primary',
             fontWeight: 700,
             pb: 1,
           }}
@@ -561,7 +561,7 @@ function TransferPage() {
                 fontWeight={700}
                 sx={{
                   mt: 0.5,
-                  color: '#1E3A5F',
+                  color: 'text.primary',
                 }}
               >
                 {formatCurrency(getNumericAmount())}

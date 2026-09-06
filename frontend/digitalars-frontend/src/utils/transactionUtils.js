@@ -4,6 +4,7 @@ import {
   CallReceivedRounded,
 } from '@mui/icons-material';
 
+import { transactionColors } from '../theme/tokens';
 /**
  * Formatea un importe numérico como moneda argentina (ARS).
  *
@@ -22,23 +23,35 @@ export const formatCurrency = (amount) =>
 /**
  * Devuelve la presentación visual correspondiente al tipo de movimiento.
  *
- * La dirección del monto (signo) y la paleta de colores se determinan
- * a partir del valor de `transaction.type` que envía el backend.
+ * La dirección del monto se determina a partir de `transaction.type`.
+ * Los colores se obtienen del theme para respetar automáticamente
+ * el esquema Light o Dark activo.
  *
  * @param {{ type: string }} transaction Objeto con al menos la propiedad `type`.
- * @returns {{ label: string, sign: string, Icon: React.ElementType, iconColor: string, iconBackground: string, amountColor: string }}
+ * @param {'light' | 'dark'} mode Esquema de color activo
+ * @returns {{ label: string, sign: string, Icon: React.ElementType, iconColor: string, iconBackground: string, borderColor: string, amountColor: string }}
  */
-export const getTransactionPresentation = (transaction) => {
+export const getTransactionPresentation = (transaction, mode = 'light') => {
+// Selecciona los tokens categóricos correspondientes al esquema activo.
+  const activeMode = mode === 'dark' ? 'dark' : 'light';
+
+  const colors = {
+    deposit: transactionColors.deposit[activeMode],
+    incoming: transactionColors.incoming[activeMode],
+    outgoing: transactionColors.outgoing[activeMode],
+    default: transactionColors.default[activeMode],
+  };
+
   switch (transaction?.type) {
     case 'Deposit':
       return {
         label: 'Depósito',
         sign: '+',
         Icon: AddRounded,
-        iconColor: '#7C3AED',
-        iconBackground: '#F3E8FF',
-        borderColor: '#D8B4FE',
-        amountColor: '#15803D',
+        iconColor: colors.deposit.icon,
+        iconBackground: colors.deposit.iconBackground,
+        borderColor: colors.deposit.border,
+        amountColor: colors.deposit.amount,
       };
 
     case 'TransferIn':
@@ -46,10 +59,10 @@ export const getTransactionPresentation = (transaction) => {
         label: 'Transferencia recibida',
         sign: '+',
         Icon: CallReceivedRounded,
-        iconColor: '#15803D',
-        iconBackground: '#DCFCE7',
-        borderColor: '#86EFAC',
-        amountColor: '#15803D',
+        iconColor: colors.incoming.icon,
+        iconBackground: colors.incoming.iconBackground,
+        borderColor: colors.incoming.border,
+        amountColor: colors.incoming.amount,
       };
 
     case 'TransferOut':
@@ -57,10 +70,10 @@ export const getTransactionPresentation = (transaction) => {
         label: 'Transferencia enviada',
         sign: '-',
         Icon: ArrowOutwardRounded,
-        iconColor: '#0284C7',
-        iconBackground: '#E0F2FE',
-        borderColor: '#7DD3FC',
-        amountColor: '#1E3A5F',
+        iconColor: colors.outgoing.icon,
+        iconBackground: colors.outgoing.iconBackground,
+        borderColor: colors.outgoing.border,
+        amountColor: colors.outgoing.amount,
       };
 
     default:
@@ -68,10 +81,10 @@ export const getTransactionPresentation = (transaction) => {
         label: 'Movimiento',
         sign: '',
         Icon: ArrowOutwardRounded,
-        iconColor: '#475569',
-        iconBackground: '#F1F5F9',
-        borderColor: '#CBD5E1',
-        amountColor: '#1E3A5F',
+        iconColor: colors.default.icon,
+        iconBackground: colors.default.iconBackground,
+        borderColor: colors.default.border,
+        amountColor: colors.default.amount,
       };
   }
 };

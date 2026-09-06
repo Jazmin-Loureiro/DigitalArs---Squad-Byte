@@ -110,7 +110,7 @@ function AppLayout() {
           variant="h6"
           component="span"
           fontWeight={700}
-          sx={{ color: "#1E3A5F" }}
+          color="text.primary"
         >
           Digital ARS
         </Typography>
@@ -269,7 +269,7 @@ function AppLayout() {
             variant="h6"
             component="span"
             fontWeight={700}
-            sx={{ color: "#1E3A5F" }}
+            color="text.primary"
           >
             Digital ARS
           </Typography>

@@ -85,7 +85,7 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
       fullWidth
       disableRestoreFocus
     >
-      <DialogTitle sx={{ fontWeight: 700, color: "#1E3A5F" }}>
+      <DialogTitle sx={{ fontWeight: 700, color: "text.primary" }}>
         {mode === "create" ? "Nuevo Usuario" : "Editar Usuario"}
       </DialogTitle>
       <Box component="form" onSubmit={handleSubmit} noValidate>

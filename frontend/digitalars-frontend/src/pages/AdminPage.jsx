@@ -149,12 +149,12 @@ function AdminPage() {
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
-        <PeopleIcon sx={{ color: "primary.dark", fontSize: 32 }} />
+        <PeopleIcon sx={{ color: "primary.main", fontSize: 32 }} />
         <Typography
           variant="h4"
           component="h1"
           fontWeight={700}
-          sx={{ color: "#1E3A5F" }}
+          color="text.primary"
         >
           Gestión de Usuarios
         </Typography>
@@ -222,18 +222,9 @@ function AdminPage() {
             startIcon={<PersonAddOutlined />}
             onClick={handleOpenCreate}
             sx={{
-              textTransform: "none",
               fontWeight: 600,
               fontSize: "0.9rem",
-              borderRadius: 2,
               px: 2.5,
-              py: 1,
-              bgcolor: "#1E3A5F",
-              boxShadow: "0 2px 8px rgba(30, 58, 95, 0.25)",
-              "&:hover": {
-                bgcolor: "#152a45",
-                boxShadow: "0 4px 12px rgba(30, 58, 95, 0.35)",
-              },
             }}
           >
             Crear usuario

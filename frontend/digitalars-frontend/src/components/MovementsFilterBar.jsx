@@ -19,6 +19,8 @@ import {
   ExpandLessOutlined,
 } from '@mui/icons-material';
 
+import { alpha } from '@mui/material/styles';
+
 /**
  * Opciones disponibles para el filtro de tipo de movimiento.
  *
@@ -218,7 +220,7 @@ function MovementsFilterBar({ filters, onFilterChange }) {
               color="error"
               startIcon={<CloseOutlined sx={{ fontSize: 16 }} />}
               onClick={handleClearFilters}
-              sx={{
+              sx={(theme) => ({
                 textTransform: 'none',
                 fontWeight: 600,
                 fontSize: '0.8125rem',
@@ -227,12 +229,16 @@ function MovementsFilterBar({ filters, onFilterChange }) {
                 whiteSpace: 'nowrap',
                 borderRadius: 2,
                 borderColor: 'error.light',
-                bgcolor: 'rgba(211, 47, 47, 0.04)',
+
+                // El fondo deriva del color de error activo para adaptarse
+                // automáticamente a los esquemas Light y Dark.
+                bgcolor: alpha(theme.palette.error.main, 0.04),
+
                 '&:hover': {
-                  bgcolor: 'rgba(211, 47, 47, 0.1)',
+                  bgcolor: alpha(theme.palette.error.main, 0.1),
                   borderColor: 'error.main',
                 },
-              }}
+              })}
             >
               Limpiar
             </Button>
