@@ -24,6 +24,9 @@ import { useAuth } from '../hooks/useAuth';
 import accountService from '../services/accountService';
 import transactionService from '../services/transactionService';
 import { useNavigate } from 'react-router-dom';
+
+import digitalArsLogo from '../assets/brand/digital-ars-logo.svg';
+import balanceWallet from '../assets/illustrations/balance-wallet.svg';
 import {
   formatCurrency,
   getTransactionPresentation,
@@ -164,13 +167,46 @@ useEffect(() => {
     <Box
       sx={{
         width: '100%',
-        maxWidth: 1100,
+        maxWidth: 1200,
         mx: 'auto',
-        p: { xs: 3, md: 4 },
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 3, md: 4 },
       }}
     >
+      {/* Marca Digital ARS. El símbolo se mantiene como asset vectorial y
+    el nombre como texto para conservar escalabilidad y accesibilidad. */}
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: 'center',
+          mb: 4,
+        }}
+      >
+        <Box
+          component="img"
+          src={digitalArsLogo}
+          alt=""
+          aria-hidden="true"
+          sx={{
+            width: 32,
+            height: 32,
+            flexShrink: 0,
+          }}
+        />
+
+        <Typography
+          variant="h4"
+          component="p"
+          fontWeight={700}
+          color="text.primary"
+        >
+          Digital ARS
+        </Typography>
+      </Stack>
+
       {/* Encabezado del Dashboard */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography
           variant="h4"
           component="h1"
@@ -189,30 +225,48 @@ useEffect(() => {
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 3, sm: 4 },
-          border: '1px solid',
-          borderColor: 'divider',
+          position: 'relative',
+          overflow: 'hidden',
+          minHeight: { xs: 210, sm: 230 },
+          p: { xs: 2.5, sm: 4 },
+          bgcolor: 'background.brandSoft',
           borderRadius: 3,
         }}
       >
         <Stack
           direction="row"
-          spacing={1}
+          spacing={0.5}
           sx={{
             mb: 2,
             alignItems: 'center',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
-          <AccountBalanceWalletOutlined color="primary" />
-
           <Typography
-            variant="h6"
+            variant="h4"
             component="h2"
-            fontWeight={600}
+            fontWeight={700}
             color="text.primary"
           >
             Saldo disponible
           </Typography>
+
+          <IconButton
+            onClick={() => setShowBalance((previous) => !previous)}
+            aria-label={
+              showBalance
+                ? 'Ocultar saldo disponible'
+                : 'Mostrar saldo disponible'
+            }
+            size="small"
+          >
+            {showBalance ? (
+              <VisibilityOffOutlined />
+            ) : (
+              <VisibilityOutlined />
+            )}
+          </IconButton>
         </Stack>
 
         {/* Mientras la API responde mostramos un estado de carga explícito. */}
@@ -254,13 +308,6 @@ useEffect(() => {
 
         {/* El saldo solo se muestra cuando la cuenta fue obtenida correctamente. */}
         {!isLoading && !error && account && (
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              alignItems: 'center',
-            }}
-          >
             <Typography
               variant="h3"
               component="p"
@@ -275,24 +322,25 @@ useEffect(() => {
             >
               {showBalance ? formatCurrency(account.money) : '$ ••••••••'}
             </Typography>
-
-            <IconButton
-              onClick={() => setShowBalance((previous) => !previous)}
-              aria-label={
-                showBalance
-                  ? 'Ocultar saldo disponible'
-                  : 'Mostrar saldo disponible'
-              }
-              size="large"
-            >
-              {showBalance ? (
-                <VisibilityOffOutlined />
-              ) : (
-                <VisibilityOutlined />
-              )}
-            </IconButton>
-          </Stack>
         )}
+        {/* Ilustración decorativa del saldo. Se posiciona fuera del flujo para
+    no competir con la información financiera principal. */}
+        <Box
+          component="img"
+          src={balanceWallet}
+          alt=""
+          aria-hidden="true"
+          sx={{
+            position: 'absolute',
+            right: { xs: -18, sm: 24 },
+            bottom: { xs: 8, sm: 16 },
+            width: { xs: 150, sm: 200 },
+            maxHeight: '80%',
+            objectFit: 'contain',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        />
       </Paper>
       {/* Acciones principales de la cuenta. En HU-24 funcionan como puntos de entrada. Los flujos completos de depósito y transferencia corresponden a HU-25 y HU-26. */}
       <Box
