@@ -10,10 +10,7 @@ import {
 import {
   AppBar,
   Avatar,
-  BottomNavigation,
-  BottomNavigationAction,
   Box,
-  IconButton,
   Divider,
   Drawer,
   List,
@@ -22,13 +19,15 @@ import {
   ListItemText,
   ListSubheader,
   Toolbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import ActionButton from "../components/ActionButton";
 
-const DRAWER_WIDTH = 260; // De 240 a 260 para que no corte texto
+const DRAWER_WIDTH = 270;
 
 function AppLayout() {
   const navigate = useNavigate();
@@ -47,9 +46,8 @@ function AppLayout() {
     { label: "Mi perfil", path: "/perfil", icon: <AccountCircleOutlined /> },
   ];
 
-  // Distinción de etiquetas según resolución
   const adminDesktopItem = {
-    label: "Gestión de Usuarios", // En vez de repetir "Administración"
+    label: "Gestión de Usuarios",
     path: "/admin",
     icon: <AdminPanelSettingsOutlined />,
   };
@@ -69,12 +67,6 @@ function AppLayout() {
     navigate("/login", { replace: true });
   };
 
-  const currentPath = mobileNavItems.some(
-    (item) => item.path === location.pathname,
-  )
-    ? location.pathname
-    : "/";
-
   const renderNavButtons = (items) =>
     items.map((item) => {
       const isActive = location.pathname === item.path;
@@ -84,9 +76,26 @@ function AppLayout() {
           selected={isActive}
           onClick={() => navigate(item.path)}
           aria-current={isActive ? "page" : undefined}
-          sx={{ minHeight: 48, mb: 0.5, borderRadius: 2 }}
+          sx={{
+            minHeight: 46,
+            mb: 0.5,
+            borderRadius: "radii.sm",
+            "&.Mui-selected": {
+              bgcolor: "action.selected",
+              color: "primary.main",
+              "& .MuiListItemIcon-root": { color: "primary.main" },
+              "&:hover": { bgcolor: "action.selected" },
+            },
+          }}
         >
-          <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+          <ListItemIcon
+            sx={{
+              minWidth: 40,
+              color: isActive ? "primary.main" : "text.secondary",
+            }}
+          >
+            {item.icon}
+          </ListItemIcon>
           <ListItemText
             primary={item.label}
             slotProps={{
@@ -118,7 +127,7 @@ function AppLayout() {
 
       <Divider />
 
-      {/* Navegación Desktop: Administración arriba primero */}
+      {/* Navegación Desktop */}
       <List sx={{ px: 1.5, py: 2 }}>
         {isAdmin && (
           <>
@@ -159,25 +168,27 @@ function AppLayout() {
         {renderNavButtons(personalItems)}
       </List>
 
-      {/* Pie del Sidebar Desktop: Perfil + Botón sutil de Cerrar Sesión */}
-      {/* Pie del Sidebar Desktop: Usuario + Salida */}
+      {/* Pie del Sidebar Desktop */}
       <Box sx={{ mt: "auto" }}>
         <Divider />
         <Box
           sx={{
-            p: 2,
+            p: 1.5,
             display: "flex",
             alignItems: "center",
-            gap: 1.5,
+            gap: 1.25,
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
           <Avatar
             sx={{
-              width: 38,
-              height: 38,
+              width: 36,
+              height: 36,
               bgcolor: "primary.main",
+              color: "primary.contrastText",
               fontWeight: 600,
-              fontSize: "0.85rem",
+              fontSize: "0.82rem",
               flexShrink: 0,
             }}
           >
@@ -185,28 +196,39 @@ function AppLayout() {
             {user?.lastName?.charAt(0)}
           </Avatar>
 
-          <Box sx={{ minWidth: 0, flexGrow: 1, textAlign: "left" }}>
+          <Box sx={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
             <Typography
               variant="body2"
               fontWeight={600}
               noWrap
-              sx={{ color: "text.primary", lineHeight: 1.2 }}
+              sx={{
+                color: "text.primary",
+                lineHeight: 1.2,
+                fontSize: "0.86rem",
+              }}
+              title={`${user?.firstName} ${user?.lastName}`}
             >
               {user?.firstName} {user?.lastName}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              noWrap
-              display="block"
-              sx={{ mt: 0.2 }}
-            >
-              {user?.email}
-            </Typography>
+
+            <Tooltip title={user?.email || ""} arrow placement="top">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                noWrap
+                display="block"
+                sx={{
+                  mt: 0.2,
+                  fontSize: "0.74rem",
+                  cursor: "default",
+                }}
+              >
+                {user?.email}
+              </Typography>
+            </Tooltip>
           </Box>
 
-          <IconButton
-            size="small"
+          <ActionButton
             title="Cerrar sesión"
             onClick={handleLogout}
             sx={{
@@ -214,12 +236,12 @@ function AppLayout() {
               color: "text.secondary",
               "&:hover": {
                 color: "error.main",
-                bgcolor: "error.lighter",
+                bgcolor: "background.subtle",
               },
             }}
           >
             <LogoutOutlined fontSize="small" />
-          </IconButton>
+          </ActionButton>
         </Box>
       </Box>
     </Box>
@@ -244,13 +266,15 @@ function AppLayout() {
           "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
             boxSizing: "border-box",
+            bgcolor: "background.paper",
+            borderColor: "divider",
           },
         }}
       >
         {desktopNavigation}
       </Drawer>
 
-      {/* Header Mobile: Limpio */}
+      {/* Header Mobile */}
       <AppBar
         position="fixed"
         color="inherit"
@@ -276,14 +300,14 @@ function AppLayout() {
         </Toolbar>
       </AppBar>
 
-      {/* Contenedor Principal: Flexbox con Footer Sticky en Desktop */}
+      {/* Contenedor Principal */}
       <Box
         component="main"
         sx={{
           ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
-          pt: { xs: 8, md: 3 },
-          pb: { xs: 10, md: 0 },
-          px: { xs: 1.5, sm: 3 },
+          pt: { xs: 8.5, md: 3 },
+          pb: { xs: 14, md: 3 },
+          px: { xs: 2, sm: 3 }, // 16px en mobile
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
@@ -292,21 +316,22 @@ function AppLayout() {
           overflowX: "hidden",
         }}
       >
-        {/* Vista activa */}
-        <Box sx={{ flexGrow: 1, pb: { md: 4 } }}>
+        <Box sx={{ flex: "1 0 auto", width: "100%" }}>
           <Outlet />
         </Box>
 
-        {/* Footer institucional discreto */}
+        {/* Footer Desktop */}
         <Box
           component="footer"
           sx={{
             display: { xs: "none", md: "flex" },
-            py: 2,
+            py: 2.5,
             mt: "auto",
             justifyContent: "space-between",
             alignItems: "center",
             opacity: 0.6,
+            borderTop: "1px solid",
+            borderColor: "divider",
           }}
         >
           <Typography variant="caption" color="text.secondary">
@@ -318,37 +343,118 @@ function AppLayout() {
         </Box>
       </Box>
 
-      {/* Navegación Inferior Mobile Fija */}
-      <BottomNavigation
-        value={currentPath}
-        onChange={(e, newPath) => {
-          e.currentTarget?.blur?.(); // <- Quita el foco del botón tocado
-          navigate(newPath);
-        }}
-        showLabels
+      {/* 1. Cortina degradada: visible solo en mobile */}
+      <Box
         sx={{
-          display: { xs: "flex", md: "none" },
+          display: { xs: "block", md: "none !important" },
           position: "fixed",
+          bottom: 0,
           left: 0,
           right: 0,
-          bottom: 0,
-          height: 64,
-          borderTop: "1px solid",
-          borderColor: "divider",
-          bgcolor: "background.paper",
+          height: 120,
+          pointerEvents: "none",
+          zIndex: (theme) => theme.zIndex.appBar,
+          background:
+            "linear-gradient(to top, var(--mui-palette-background-default) 15%, transparent 100%)",
+        }}
+      />
+
+      {/* 2. Menú Flotante Cápsula: visible solo en mobile */}
+      <Box
+        component="nav"
+        aria-label="Navegación móvil"
+        sx={{
+          display: { xs: "flex", md: "none !important" },
+          position: "fixed",
+          bottom: 16,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "calc(100% - 32px)",
+          maxWidth: 400,
+          p: "6px",
+          borderRadius: "999px",
+          overflow: "hidden",
           zIndex: (theme) => theme.zIndex.appBar + 1,
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 0.5,
+          bgcolor: "rgba(255, 255, 255, 0.82)",
+          border: "1px solid rgba(0, 0, 0, 0.08)",
+          boxShadow:
+            "0 10px 25px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          ":root.dark &, .dark &": {
+            bgcolor: "rgba(30, 41, 59, 0.82)",
+            border: "1px solid rgba(255, 255, 255, 0.14)",
+            boxShadow:
+              "0 12px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15)",
+          },
         }}
       >
-        {mobileNavItems.map((item) => (
-          <BottomNavigationAction
-            key={item.path}
-            label={item.label}
-            value={item.path}
-            icon={item.icon}
-            sx={{ minWidth: 0, px: 0.5 }}
-          />
-        ))}
-      </BottomNavigation>
+        {mobileNavItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Box
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              sx={{
+                flex: "1 1 0",
+                minWidth: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                py: "7px",
+                px: "4px",
+                borderRadius: "999px",
+                cursor: "pointer",
+                userSelect: "none",
+                transition: "all 0.2s ease-in-out",
+                bgcolor: isActive ? "rgba(0, 105, 168, 0.12)" : "transparent",
+                color: isActive ? "primary.main" : "text.secondary",
+                ":root.dark &, .dark &": {
+                  bgcolor: isActive ? "rgba(0, 188, 255, 0.2)" : "transparent",
+                  color: isActive ? "primary.main" : "text.secondary",
+                },
+                "&:hover": {
+                  color: "primary.main",
+                },
+                "&:active": {
+                  transform: "scale(0.95)",
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  "& svg": {
+                    fontSize: "1.3rem",
+                    transition: "transform 0.2s ease",
+                    transform: isActive ? "scale(1.08)" : "scale(1)",
+                  },
+                }}
+              >
+                {item.icon}
+              </Box>
+              <Typography
+                component="span"
+                sx={{
+                  fontSize: "0.68rem",
+                  fontWeight: isActive ? 700 : 500,
+                  mt: "3px",
+                  lineHeight: 1,
+                  color: "inherit",
+                }}
+              >
+                {item.label}
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
     </Box>
   );
 }
