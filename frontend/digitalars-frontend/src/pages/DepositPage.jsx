@@ -1,6 +1,6 @@
 import {
   AccountBalanceWalletOutlined,
-  CheckCircleOutlineOutlined,
+  ArrowBackOutlined,
 } from '@mui/icons-material';
 import {
   Alert,
@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import accountService from '../services/accountService';
+import transferSuccessIllustration from '../assets/illustrations/transfer-success.svg';
 
 const MAX_DEPOSIT_AMOUNT = 500000;
 
@@ -156,112 +157,123 @@ function DepositPage() {
    */
   if (depositResult) {
     return (
-      <Box
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: 720,
+        mx: 'auto',
+        px: { xs: 2, md: 4 },
+        pt: { xs: 3, md: 6 },
+        pb: { xs: 3, md: 4 },
+      }}
+    >
+      <Paper
+        elevation={0}
         sx={{
-          width: '100%',
-          maxWidth: 720,
-          mx: 'auto',
-          px: { xs: 3, md: 4 },
-          pt: { xs: 4, md: 6 },
-          pb: { xs: 3, md: 4 },
+          p: { xs: 0, md: 5 },
+          border: { xs: 'none', md: '1px solid' },
+          borderColor: { md: 'divider' },
+          borderRadius: { xs: 0, md: 3 },
+          bgcolor: { xs: 'transparent', md: 'background.paper' },
+          textAlign: 'center',
         }}
       >
-        <Paper
-          elevation={0}
+        <Box
+          component="img"
+          src={transferSuccessIllustration}
+          alt=""
+          aria-hidden="true"
           sx={{
-            p: { xs: 3, sm: 5 },
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-            textAlign: 'center',
+            display: 'block',
+            width: {
+              xs: 140,
+              sm: 180,
+            },
+            maxWidth: '100%',
+            height: 'auto',
+            mx: 'auto',
+            mb: 2,
+          }}
+        />
+
+        <Typography
+          variant="h4"
+          component="h1"
+          fontWeight={700}
+          sx={{
+            color: 'text.primary',
+            fontSize: {
+              xs: '1.5rem',
+              md: '2.125rem',
+            },
           }}
         >
-          <CheckCircleOutlineOutlined
-            color="success"
-            sx={{
-              fontSize: 64,
-              mb: 2,
-            }}
-          />
+          Depósito realizado
+        </Typography>
+
+        <Typography color="text.secondary" sx={{ mt: 2 }}>
+          Ingresaste {formatCurrency(depositResult.amount)} a tu cuenta.
+        </Typography>
+
+        <Box
+          sx={{
+            mt: { xs: 3, md: 4 },
+            p: 3,
+            borderRadius: 2,
+            bgcolor: 'background.brandSoft',
+          }}
+        >
+          <Typography color="text.secondary">
+            Nuevo saldo
+          </Typography>
 
           <Typography
             variant="h4"
-            component="h1"
+            component="p"
             fontWeight={700}
             sx={{
               color: 'text.primary',
-              fontSize: {
-                xs: '1.75rem',
-                sm: '2.125rem',
-              },
+              mt: 1,
             }}
           >
-            Depósito realizado
+            {formatCurrency(depositResult.newBalance)}
           </Typography>
+        </Box>
 
-          <Typography color="text.secondary" sx={{ mt: 2 }}>
-            Ingresaste {formatCurrency(depositResult.amount)} a tu cuenta.
-          </Typography>
-
-          <Box
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          sx={{
+            mt: { xs: 3, md: 4 },
+            justifyContent: 'center',
+          }}
+        >
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate('/')}
             sx={{
-              mt: 4,
-              p: 3,
-              borderRadius: 2,
-              bgcolor: 'background.subtle',
+              minHeight: 48,
+              fontWeight: 600,
             }}
           >
-            <Typography color="text.secondary">
-              Nuevo saldo
-            </Typography>
+            Volver al inicio
+          </Button>
 
-            <Typography
-              variant="h4"
-              component="p"
-              fontWeight={700}
-              sx={{
-                color: 'text.primary',
-                mt: 1,
-              }}
-            >
-              {formatCurrency(depositResult.newBalance)}
-            </Typography>
-          </Box>
-
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={handleNewDeposit}
             sx={{
-              mt: 4,
-              justifyContent: 'center',
+              minHeight: 48,
+              fontWeight: 600,
             }}
           >
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate('/')}
-              sx={{
-                minHeight: 48,
-                fontWeight: 600,
-              }}
-            >
-              Volver al inicio
-            </Button>
-
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={handleNewDeposit}
-              sx={{
-                minHeight: 48,
-                fontWeight: 600,
-              }}
-            >
-              Hacer otro depósito
-            </Button>
-          </Stack>
-        </Paper>
-      </Box>
+            Hacer otro depósito
+          </Button>
+        </Stack>
+      </Paper>
+    </Box>
     );
   }
 
@@ -274,12 +286,29 @@ function DepositPage() {
         p: { xs: 3, md: 4 },
       }}
     >
+      <Button
+        aria-label="Volver al inicio"
+        onClick={() => navigate('/')}
+        sx={{
+          display: { xs: 'inline-flex', md: 'none' },
+          minWidth: 44,
+          width: 44,
+          height: 44,
+          p: 0,
+          ml: '-10px',
+          mb: 2,
+          color: 'text.primary',
+        }}
+      >
+        <ArrowBackOutlined />
+      </Button>
+
       <Box
         component="nav"
         aria-label="Ruta de navegación"
         sx={{
           mb: 4,
-          display: 'flex',
+          display: { xs: 'none', md: 'flex' },
           alignItems: 'center',
           gap: 1,
           color: 'text.secondary',
@@ -313,17 +342,20 @@ function DepositPage() {
           Depositar dinero
         </Typography>
       </Box>
-      <Box sx={{ mb: 5 }}>
+
+      <Box
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          mb: 5,
+        }}
+      >
         <Typography
           variant="h4"
           component="h1"
           fontWeight={700}
           sx={{
             color: 'text.primary',
-            fontSize: {
-              xs: '1.75rem',
-              sm: '2.125rem',
-            },
+            fontSize: '2.125rem',
           }}
         >
           Depositar dinero
@@ -340,31 +372,47 @@ function DepositPage() {
         noValidate
         elevation={0}
         sx={{
-          p: { xs: 3, sm: 4 },
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
+          p: { xs: 0, md: 4 },
+          border: { xs: 'none', md: '1px solid' },
+          borderColor: { md: 'divider' },
+          borderRadius: { xs: 0, md: 3 },
+          bgcolor: { xs: 'transparent', md: 'background.paper' },
         }}
       >
-        <Stack
-          direction="row"
-          spacing={1}
+      <Box sx={{ mb: 3 }}>
+        <Box
           sx={{
+            display: 'flex',
             alignItems: 'center',
-            mb: 3,
+            gap: { xs: 0, md: 1 },
           }}
         >
-          <AccountBalanceWalletOutlined color="primary" />
+          <AccountBalanceWalletOutlined
+            color="primary"
+            sx={{
+              display: { xs: 'none', md: 'block' },
+            }}
+          />
 
           <Typography
-            variant="h6"
+            variant="h3"
             component="h2"
-            fontWeight={600}
             color="text.primary"
           >
             Datos del depósito
           </Typography>
-        </Stack>
+        </Box>
+
+        <Typography
+          color="text.secondary"
+          sx={{
+            mt: 1,
+            ml: { xs: 0, md: 4 },
+          }}
+        >
+          Completá los datos para continuar.
+        </Typography>
+      </Box>
 
         {requestError && (
           <Alert severity="error" sx={{ mb: 3 }}>
@@ -446,7 +494,7 @@ function DepositPage() {
           disabled={isSubmitting}
           sx={{
             mt: 4,
-            minHeight: 56,
+            minHeight: 48,
             fontWeight: 600,
           }}
         >

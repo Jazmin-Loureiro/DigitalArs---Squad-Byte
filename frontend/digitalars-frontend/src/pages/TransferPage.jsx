@@ -355,15 +355,17 @@ function TransferPage() {
           En desktop conservamos el breadcrumb para aportar contexto. */}
       <Box sx={{ mb: { xs: 2, md: 4 } }}>
         <Button
-          onClick={() => navigate('/')}
           aria-label="Volver al inicio"
+          onClick={() => navigate('/')}
           sx={{
             display: { xs: 'inline-flex', md: 'none' },
             minWidth: 44,
             width: 44,
             height: 44,
             p: 0,
-            color: 'text.secondary',
+            ml: '-10px',
+            mb: 2,
+            color: 'text.primary',
           }}
         >
           <ArrowBackOutlined />
