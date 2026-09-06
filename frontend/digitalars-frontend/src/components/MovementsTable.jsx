@@ -6,6 +6,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useColorScheme } from '@mui/material/styles';
 import { InboxOutlined } from '@mui/icons-material';
 
 import TablePaginationFooter from './TablePaginationFooter';
@@ -52,6 +53,10 @@ function MovementsTable({
   onRowsPerPageChange,
   onSortChange,
 }) {
+  // El modo activo permite resolver los tokens categóricos de cada movimiento
+  // según el esquema Light o Dark seleccionado.
+  const { mode } = useColorScheme();
+
   return (
     <Paper
       elevation={0}
@@ -71,7 +76,7 @@ function MovementsTable({
           justifyContent: 'space-between',
           px: { xs: 2, sm: 3 },
           py: 1.5,
-          bgcolor: 'grey.50',
+          bgcolor: 'background.subtle',
           borderBottom: '1px solid',
           borderColor: 'divider',
         }}
@@ -79,7 +84,7 @@ function MovementsTable({
         <Typography
           variant="subtitle2"
           fontWeight={700}
-          sx={{ color: '#1E3A5F' }}
+          color="text.primary"
         >
           Historial de movimientos ({totalCount})
         </Typography>
@@ -92,9 +97,9 @@ function MovementsTable({
             sx={{
               fontSize: '0.8125rem',
               fontWeight: 700,
-              color: sortField === 'createdDate' ? '#1E3A5F' : 'text.secondary',
-              '&.Mui-active': { color: '#1E3A5F' },
-              '& .MuiTableSortLabel-icon': { color: '#1E3A5F !important' },
+              color: sortField === 'createdDate' ? 'primary.main' : 'text.secondary',
+              '&.Mui-active': { color: 'primary.main' },
+              '& .MuiTableSortLabel-icon': { color: 'primary.main !important' },
             }}
           >
             Fecha
@@ -107,9 +112,9 @@ function MovementsTable({
             sx={{
               fontSize: '0.8125rem',
               fontWeight: 700,
-              color: sortField === 'amount' ? '#1E3A5F' : 'text.secondary',
-              '&.Mui-active': { color: '#1E3A5F' },
-              '& .MuiTableSortLabel-icon': { color: '#1E3A5F !important' },
+              color: sortField === 'amount' ? 'primary.main' : 'text.secondary',
+              '&.Mui-active': { color: 'primary.main' },
+              '& .MuiTableSortLabel-icon': { color: 'primary.main !important' },
             }}
           >
             Monto
@@ -181,7 +186,7 @@ function MovementsTable({
             <Typography
               variant="body1"
               fontWeight={600}
-              sx={{ color: '#1E3A5F' }}
+              color="text.primary"
             >
               No se encontraron movimientos
             </Typography>
@@ -197,7 +202,7 @@ function MovementsTable({
         ) : (
           /* Items de movimientos (Estilo imagen 2) */
           transactions.map((tx, index) => {
-            const presentation = getTransactionPresentation(tx);
+            const presentation = getTransactionPresentation(tx, mode);
             const TransactionIcon = presentation.Icon;
             const title = getTransactionTitle(tx);
             const subtext = getTransactionSubtext(tx);
@@ -257,7 +262,7 @@ function MovementsTable({
                       fontWeight={700}
                       noWrap
                       sx={{
-                        color: '#1E3A5F',
+                        color: 'text.primary',
                         fontSize: { xs: '0.9rem', sm: '0.95rem' },
                         lineHeight: 1.3,
                       }}

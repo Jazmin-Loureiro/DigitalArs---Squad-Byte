@@ -16,12 +16,14 @@ import {
 } from "@mui/material";
 import {
   ChevronRightRounded,
+  DarkModeOutlined,
   HelpOutlineRounded,
   LockOutlined,
   LogoutRounded,
   NotificationsNoneRounded,
   PersonOutlineRounded,
 } from "@mui/icons-material";
+import { alpha } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
@@ -30,6 +32,7 @@ import UserFormDialog from "../components/UserFormDialog";
 import ChangePasswordDialog from "../components/ChangePasswordDialog";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FeedbackSnackbar from "../components/FeedbackSnackbar";
+import AppearanceSwitch from '../components/AppearanceSwitch';
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -171,6 +174,11 @@ function ProfilePage() {
       ),
     },
     {
+      label: "Modo oscuro",
+      icon: <DarkModeOutlined />,
+      customEnd: <AppearanceSwitch />,
+    },
+    {
       label: "Ayuda y Soporte",
       icon: <HelpOutlineRounded />,
       action: () =>
@@ -187,10 +195,10 @@ function ProfilePage() {
       color: "error.main",
       mobileOnly: true,
       border: "error.light",
-      bg: (theme) =>
-        theme.palette.mode === "dark"
-          ? "rgba(239, 68, 68, 0.1)"
-          : "rgba(254, 242, 242, 0.6)",
+
+      // El fondo destructivo deriva del color de error activo para
+      // mantener una intensidad consistente en Light y Dark.
+      bg: (theme) => alpha(theme.palette.error.main, 0.08),
     },
   ];
 

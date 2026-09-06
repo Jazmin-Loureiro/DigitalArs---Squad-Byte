@@ -17,6 +17,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useColorScheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 
 import { useAuth } from '../hooks/useAuth';
@@ -39,6 +40,7 @@ import {
  */
 function HomePage() {
   const { user } = useAuth();
+  const { mode } = useColorScheme();
 
   const navigate = useNavigate();
   const [account, setAccount] = useState(null);
@@ -173,7 +175,7 @@ useEffect(() => {
           variant="h4"
           component="h1"
           fontWeight={700}
-          sx={{ color: '#1E3A5F' }}
+          color="text.primary"
         >
           Hola, {user?.firstName || 'bienvenido'}
         </Typography>
@@ -207,7 +209,7 @@ useEffect(() => {
             variant="h6"
             component="h2"
             fontWeight={600}
-            sx={{ color: '#1E3A5F' }}
+            color="text.primary"
           >
             Saldo disponible
           </Typography>
@@ -264,7 +266,7 @@ useEffect(() => {
               component="p"
               fontWeight={700}
               sx={{
-                color: '#1E3A5F',
+                color: 'text.primary',
                 fontSize: {
                   xs: '2rem',
                   sm: '3rem',
@@ -367,7 +369,7 @@ useEffect(() => {
             component="h2"
             fontWeight={700}
             sx={{
-              color: '#1E3A5F',
+              color: 'text.primary',
               fontSize: {
                 xs: '1.35rem',
                 sm: '1.5rem',
@@ -419,7 +421,7 @@ useEffect(() => {
             <Typography
               variant="body1"
               fontWeight={600}
-              sx={{ color: '#1E3A5F' }}
+              color="text.primary"
             >
               Todavía no hay movimientos para mostrar
             </Typography>
@@ -437,7 +439,7 @@ useEffect(() => {
           <Box>
             {transactions.map((transaction, index) => {
               const presentation =
-                getTransactionPresentation(transaction);
+                getTransactionPresentation(transaction, mode);
               const TransactionIcon = presentation.Icon;
               const title = getTransactionTitle(transaction);
               const subtext = getTransactionSubtext(transaction);
@@ -488,7 +490,7 @@ useEffect(() => {
                       variant="body1"
                       fontWeight={700}
                       sx={{
-                        color: '#1E3A5F',
+                        color: 'text.primary',
                         lineHeight: 1.3,
                         fontSize: { xs: '0.9rem', sm: '0.95rem' },
                       }}

@@ -41,22 +41,22 @@ function UserTable({
       sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2 }}
     >
       <Table sx={{ minWidth: 650 }}>
-        <TableHead sx={{ bgcolor: "grey.50" }}>
+        <TableHead sx={{ bgcolor: "background.subtle" }}>
           <TableRow>
-            <TableCell sx={{ fontWeight: 700, color: "#1E3A5F" }}>ID</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#1E3A5F" }}>
+            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>ID</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
               Usuario
             </TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#1E3A5F" }}>
+            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
               Email
             </TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#1E3A5F" }}>
+            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
               Rol
             </TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#1E3A5F" }}>
+            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
               Estado
             </TableCell>
-            <TableCell align="right" sx={{ fontWeight: 700, color: "#1E3A5F" }}>
+            <TableCell align="right" sx={{ fontWeight: 700, color: "text.primary" }}>
               Acciones
             </TableCell>
           </TableRow>
@@ -100,8 +100,8 @@ function UserTable({
                       sx={{
                         fontWeight: 600,
                         fontSize: "0.75rem",
-                        bgcolor: isAdmin ? "primary.dark" : "grey.200",
-                        color: isAdmin ? "#FFFFFF" : "text.primary",
+                        bgcolor: isAdmin ? "primary.main" : "background.subtle",
+                        color: isAdmin ? "primary.contrastText" : "text.primary",
                       }}
                     />
                   </TableCell>

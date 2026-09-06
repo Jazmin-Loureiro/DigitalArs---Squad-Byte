@@ -53,7 +53,7 @@ function NotFoundPage() {
           variant="h4"
           component="h1"
           fontWeight={700}
-          sx={{ color: '#1E3A5F' }}
+          color="text.primary"
         >
           Página no encontrada
         </Typography>

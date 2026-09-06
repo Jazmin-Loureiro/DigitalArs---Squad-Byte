@@ -151,12 +151,12 @@ function MovementsPage() {
     <Box sx={{ width: '100%' }}>
       {/* Encabezado centrado */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 1 }}>
-        <ReceiptLongOutlined sx={{ color: 'primary.dark', fontSize: 32 }} />
+        <ReceiptLongOutlined sx={{ color: 'primary.main', fontSize: 32 }} />
         <Typography
           variant="h4"
           component="h1"
           fontWeight={700}
-          sx={{ color: '#1E3A5F', textAlign: 'center' }}
+          sx={{ color: 'text.primary', textAlign: 'center' }}
         >
           Movimientos
         </Typography>

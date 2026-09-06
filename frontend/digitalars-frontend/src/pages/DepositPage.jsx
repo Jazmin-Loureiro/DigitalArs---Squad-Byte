@@ -189,7 +189,7 @@ function DepositPage() {
             component="h1"
             fontWeight={700}
             sx={{
-              color: '#1E3A5F',
+              color: 'text.primary',
               fontSize: {
                 xs: '1.75rem',
                 sm: '2.125rem',
@@ -208,7 +208,7 @@ function DepositPage() {
               mt: 4,
               p: 3,
               borderRadius: 2,
-              bgcolor: '#F7F9FC',
+              bgcolor: 'background.subtle',
             }}
           >
             <Typography color="text.secondary">
@@ -220,7 +220,7 @@ function DepositPage() {
               component="p"
               fontWeight={700}
               sx={{
-                color: '#1E3A5F',
+                color: 'text.primary',
                 mt: 1,
               }}
             >
@@ -319,7 +319,7 @@ function DepositPage() {
           component="h1"
           fontWeight={700}
           sx={{
-            color: '#1E3A5F',
+            color: 'text.primary',
             fontSize: {
               xs: '1.75rem',
               sm: '2.125rem',
@@ -360,7 +360,7 @@ function DepositPage() {
             variant="h6"
             component="h2"
             fontWeight={600}
-            sx={{ color: '#1E3A5F' }}
+            color="text.primary"
           >
             Datos del depósito
           </Typography>
