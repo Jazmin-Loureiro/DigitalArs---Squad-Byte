@@ -6,7 +6,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -17,9 +16,7 @@ import {
 } from "@mui/icons-material";
 
 import ActionButton from "./ActionButton";
-
 import TableSkeleton from "./TableSkeleton";
-
 import TablePaginationFooter from "./TablePaginationFooter";
 
 function UserTable({
@@ -43,7 +40,9 @@ function UserTable({
       <Table sx={{ minWidth: 650 }}>
         <TableHead sx={{ bgcolor: "background.subtle" }}>
           <TableRow>
-            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>ID</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+              ID
+            </TableCell>
             <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
               Usuario
             </TableCell>
@@ -56,7 +55,10 @@ function UserTable({
             <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
               Estado
             </TableCell>
-            <TableCell align="right" sx={{ fontWeight: 700, color: "text.primary" }}>
+            <TableCell
+              align="right"
+              sx={{ fontWeight: 700, color: "text.primary" }}
+            >
               Acciones
             </TableCell>
           </TableRow>
@@ -101,7 +103,9 @@ function UserTable({
                         fontWeight: 600,
                         fontSize: "0.75rem",
                         bgcolor: isAdmin ? "primary.main" : "background.subtle",
-                        color: isAdmin ? "primary.contrastText" : "text.primary",
+                        color: isAdmin
+                          ? "primary.contrastText"
+                          : "text.primary",
                       }}
                     />
                   </TableCell>
