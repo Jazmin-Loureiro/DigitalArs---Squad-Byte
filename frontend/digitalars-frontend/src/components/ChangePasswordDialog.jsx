@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,34 +7,31 @@ import {
   TextField,
   Button,
   CircularProgress,
-  Stack,
   InputAdornment,
   IconButton,
 } from "@mui/material";
 import { VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 
+const INITIAL_PASSWORDS = {
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+};
+
 function ChangePasswordDialog({ open, onClose, onSave, saving }) {
-  const [passwords, setPasswords] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  const [passwords, setPasswords] = useState(INITIAL_PASSWORDS);
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (open) {
-      setPasswords({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-      setErrors({});
-      setShowCurrent(false);
-      setShowNew(false);
-    }
-  }, [open]);
+  const handleClose = () => {
+    if (saving) return;
+    setPasswords(INITIAL_PASSWORDS);
+    setErrors({});
+    setShowCurrent(false);
+    setShowNew(false);
+    onClose();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,13 +54,15 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
     }
 
     const success = await onSave(passwords);
-    if (success) onClose();
+    if (success) {
+      handleClose();
+    }
   };
 
   return (
     <Dialog
       open={open}
-      onClose={() => !saving && onClose()}
+      onClose={handleClose}
       maxWidth="xs"
       fullWidth
       disableRestoreFocus
@@ -160,7 +159,7 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={onClose} disabled={saving} color="inherit">
+          <Button onClick={handleClose} disabled={saving} color="inherit">
             Cancelar
           </Button>
           <Button

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -14,38 +14,32 @@ import {
   TextField,
 } from "@mui/material";
 
+const INITIAL_FORM = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  roleId: 2,
+};
+
 function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    roleId: 2,
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (open) {
-      if (mode === "edit" && user) {
-        setFormData({
-          firstName: user.firstName || "",
-          lastName: user.lastName || "",
-          email: user.email || "",
-          password: "",
-          roleId: user.roleId || 2,
-        });
-      } else {
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          roleId: 2,
-        });
-      }
-      setErrors({});
+  const handleEnter = () => {
+    if (mode === "edit" && user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        password: "",
+        roleId: user.roleId || 2,
+      });
+    } else {
+      setFormData(INITIAL_FORM);
     }
-  }, [open, mode, user]);
+    setErrors({});
+  };
 
   const validate = () => {
     const errs = {};
@@ -81,6 +75,7 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
     <Dialog
       open={open}
       onClose={() => !saving && onClose()}
+      TransitionProps={{ onEnter: handleEnter }}
       maxWidth="sm"
       fullWidth
       disableRestoreFocus

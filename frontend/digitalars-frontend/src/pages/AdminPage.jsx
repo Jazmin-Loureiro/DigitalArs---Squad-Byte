@@ -69,8 +69,39 @@ function AdminPage() {
   }, [page, rowsPerPage, search]);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    let ignore = false;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        const data = await userService.getUsers(page + 1, rowsPerPage, search);
+        if (!ignore) {
+          const list = data.items || data.data || [];
+          const total = data.totalCount ?? data.totalItems ?? list.length;
+          setUsers(list);
+          setTotalCount(total);
+        }
+      } catch {
+        if (!ignore) {
+          setSnackbar({
+            open: true,
+            message: "Error al cargar los usuarios desde la API.",
+            severity: "error",
+          });
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, rowsPerPage, search]);
 
   const handleOpenCreate = () => {
     setFormMode("create");
@@ -216,7 +247,6 @@ function AdminPage() {
             }}
           />
 
-          {/* Botón de acción con estilo fintech */}
           <Button
             variant="contained"
             startIcon={<PersonAddOutlined />}
