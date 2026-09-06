@@ -1,5 +1,4 @@
 import {
-  AccountBalanceWalletOutlined,
   AccountCircleOutlined,
   AdminPanelSettingsOutlined,
   HomeOutlined,
@@ -8,7 +7,6 @@ import {
 } from "@mui/icons-material";
 
 import {
-  AppBar,
   Avatar,
   Box,
   Divider,
@@ -18,7 +16,6 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
-  Toolbar,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -26,6 +23,7 @@ import {
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import ActionButton from "../components/ActionButton";
+import digitalArsLogo from "../assets/brand/digital-ars-logo.svg";
 
 const DRAWER_WIDTH = 270;
 
@@ -114,7 +112,17 @@ function AppLayout() {
       <Box
         sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 3, py: 3 }}
       >
-        <AccountBalanceWalletOutlined color="primary" />
+        <Box
+          component="img"
+          src={digitalArsLogo}
+          alt=""
+          aria-hidden="true"
+          sx={{
+            width: 28,
+            height: 28,
+            flexShrink: 0,
+          }}
+        />
         <Typography
           variant="h6"
           component="span"
@@ -274,38 +282,12 @@ function AppLayout() {
         {desktopNavigation}
       </Drawer>
 
-      {/* Header Mobile */}
-      <AppBar
-        position="fixed"
-        color="inherit"
-        elevation={0}
-        sx={{
-          display: { xs: "block", md: "none" },
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          bgcolor: "background.paper",
-          zIndex: (theme) => theme.zIndex.appBar,
-        }}
-      >
-        <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <AccountBalanceWalletOutlined color="primary" />
-          <Typography
-            variant="h6"
-            component="span"
-            fontWeight={700}
-            color="text.primary"
-          >
-            Digital ARS
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
       {/* Contenedor Principal */}
       <Box
         component="main"
         sx={{
           ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
-          pt: { xs: 8.5, md: 3 },
+          pt: 3,
           pb: { xs: 14, md: 3 },
           px: { xs: 2, sm: 3 }, // 16px en mobile
           minHeight: "100vh",
@@ -410,6 +392,7 @@ function AppLayout() {
                 borderRadius: "999px",
                 cursor: "pointer",
                 userSelect: "none",
+                WebkitTapHighlightColor: "transparent",
                 transition: "all 0.2s ease-in-out",
                 bgcolor: isActive ? "rgba(0, 105, 168, 0.12)" : "transparent",
                 color: isActive ? "primary.main" : "text.secondary",
