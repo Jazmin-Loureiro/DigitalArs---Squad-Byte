@@ -26,8 +26,8 @@ public class AuthService : IAuthService
         // 1. Buscar usuario por Email
         var users = await _unitOfWork.Users.FindAsync(u => u.Email == request.Email);
         var user = users.FirstOrDefault();
-        // 2. Validación de credenciales
-        if (user == null || string.IsNullOrEmpty(user.Password) || !_passwordHasher.VerifyPassword(request.Password, user.Password))
+        // 2. Validación de credenciales y estado del usuario
+        if (user == null || !user.IsActive || string.IsNullOrEmpty(user.Password) || !_passwordHasher.VerifyPassword(request.Password, user.Password))
         {
             return null;
         }
