@@ -2,7 +2,6 @@ import {
   AccountBalanceWalletOutlined,
   AddOutlined,
   ArrowForwardOutlined,
-  ReceiptLongOutlined,
   RefreshOutlined,
   VisibilityOffOutlined,
   VisibilityOutlined,
@@ -170,7 +169,8 @@ useEffect(() => {
         maxWidth: 1200,
         mx: 'auto',
         px: { xs: 2, sm: 3, md: 4 },
-        py: { xs: 3, md: 4 },
+        pt: { xs: 2, md: 2 },
+        pb: { xs: 3, md: 2 },
       }}
     >
       {/* Marca Digital ARS. El símbolo se mantiene como asset vectorial y
@@ -179,8 +179,9 @@ useEffect(() => {
         direction="row"
         spacing={1}
         sx={{
+          display: { xs: 'flex', md: 'none' },
           alignItems: 'center',
-          mb: 4,
+          mb: 3,
         }}
       >
         <Box
@@ -206,7 +207,7 @@ useEffect(() => {
       </Stack>
 
       {/* Encabezado del Dashboard */}
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: { xs: 3, md: 3.5 } }}>
         <Typography
           variant="h4"
           component="h1"
@@ -346,239 +347,243 @@ useEffect(() => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, 1fr)',
-          },
-          gap: 2,
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: { xs: 1.5, sm: 2 },
           mt: 3,
         }}
       >
         <Button
           variant="contained"
           size="large"
-          startIcon={<AddOutlined />}
+          startIcon={
+            <AddOutlined
+              sx={{
+                display: { xs: 'none', sm: 'block' },
+              }}
+            />
+          }
           onClick={() => navigate('/depositar')}
           sx={{
             minHeight: 56,
+            px: { xs: 1, sm: 2.5 },
             fontWeight: 600,
+            fontSize: { xs: '0.8125rem', sm: '1rem' },
+            whiteSpace: 'nowrap',
           }}
         >
-          Depositar
+          Ingresar dinero
         </Button>
-
         <Button
           variant="outlined"
           size="large"
-          startIcon={<ArrowForwardOutlined />}
+          startIcon={
+            <ArrowForwardOutlined
+              sx={{
+                display: { xs: 'none', sm: 'block' },
+              }}
+            />
+          }
           onClick={() => navigate('/transferir')}
           sx={{
             minHeight: 56,
+            px: { xs: 1, sm: 2.5 },
             fontWeight: 600,
+            fontSize: { xs: '0.8125rem', sm: '1rem' },
+            whiteSpace: 'nowrap',
           }}
         >
-          Transferir
+          Transferir dinero
         </Button>
       </Box>
-      {/* Resumen de los últimos movimientos obtenidos desde el endpoint implementado en HU-17. */}    <Box sx={{ mt: 5 }}>
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        sx={{
-          alignItems: {
-            xs: 'flex-start',
-            sm: 'center',
-          },
-          justifyContent: 'space-between',
-          gap: {
-            xs: 1,
-            sm: 2,
-          },
-          mb: 2,
-        }}
-      >
-        {/* Título de la sección. En mobile ocupa su propia línea para conservar legibilidad y evitar que compita por espacio con la acción "Ver todos". */}
+      {/* Resumen de los últimos movimientos obtenidos desde el endpoint implementado en HU-17. */}
+      <Box sx={{ mt: 4 }}>
         <Stack
           direction="row"
-          spacing={1}
-          sx={{ alignItems: 'center' }}
-        >
-          <ReceiptLongOutlined
-              color="primary"
-              sx={{
-                display: {
-                xs: 'none',
-                sm: 'block',
-                },
-                }}
-          />
-
-          <Typography
-            variant="h5"
-            component="h2"
-            fontWeight={700}
-            sx={{
-              color: 'text.primary',
-              fontSize: {
-                xs: '1.35rem',
-                sm: '1.5rem',
-              },
-            }}
-          >
-            Últimos movimientos
-          </Typography>
-        </Stack>
-
-        <Button
-          onClick={() => navigate('/movimientos')}
-          endIcon={<ArrowForwardOutlined />}
           sx={{
-            alignSelf: {
-              xs: 'flex-start',
-              sm: 'center',
-            },
-            textTransform: 'none',
-            whiteSpace: 'nowrap',
-            fontWeight: 600,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1,
+            mb: 2,
           }}
         >
-          Ver todos
-        </Button>
-      </Stack>
-      <Paper
-        elevation={0}
-        sx={{
-          px: { xs: 2, sm: 3 },
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
-          overflow: 'hidden',
-        }}
-      >
-        {/* Mientras se consultan los movimientos mostramos un estado de carga. */}
-        {areTransactionsLoading ? (
-          <Box sx={{ py: 4, textAlign: 'center' }}>
-            <CircularProgress size={28} />
-          </Box>
-        ) : transactionsError ? (
-          <Alert severity="error" sx={{ my: 2 }}>
-            {transactionsError}
-          </Alert>
-        ) : transactions.length === 0 ? (
-          /* Este estado solo se muestra cuando la API responde sin movimientos. */
-          <Box sx={{ py: 4, textAlign: 'center' }}>
+        {/* Encabezado compacto de actividad reciente. El acceso al historial
+            permanece visible en la misma fila en todos los tamaños. */}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ alignItems: 'center' }}
+          >
             <Typography
-              variant="body1"
-              fontWeight={600}
-              color="text.primary"
+              variant="h5"
+              component="h2"
+              fontWeight={700}
+              sx={{
+                color: 'text.primary',
+                fontSize: {
+                  xs: '1.125rem',
+                  sm: '1.5rem',
+                },
+                whiteSpace: 'nowrap',
+              }}
             >
-              Todavía no hay movimientos para mostrar
+              Últimos movimientos
             </Typography>
+          </Stack>
 
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 0.5 }}
-            >
-              Cuando realices una operación, vas a poder verla acá.
-            </Typography>
-          </Box>
-        ) : (
-          /* Los movimientos llegan ordenados del más reciente al más antiguo. */
-          <Box>
-            {transactions.map((transaction, index) => {
-              const presentation =
-                getTransactionPresentation(transaction, mode);
-              const TransactionIcon = presentation.Icon;
-              const title = getTransactionTitle(transaction);
-              const subtext = getTransactionSubtext(transaction);
+          <Button
+            onClick={() => navigate('/movimientos')}
+            endIcon={<ArrowForwardOutlined />}
+            sx={{
+              flexShrink: 0,
+              minWidth: 'auto',
+              px: { xs: 0.5, sm: 1 },
+              textTransform: 'none',
+              whiteSpace: 'nowrap',
+              fontWeight: 600,
+              fontSize: { xs: '0.8125rem', sm: '1rem' },
+            }}
+          >
+            Ver todos
+          </Button>
+        </Stack>
+        <Paper
+          elevation={0}
+          sx={{
+            px: 0,
+            bgcolor: 'transparent',
+          }}
+        >
+          {/* Mientras se consultan los movimientos mostramos un estado de carga. */}
+          {areTransactionsLoading ? (
+            <Box sx={{ py: 4, textAlign: 'center' }}>
+              <CircularProgress size={28} />
+            </Box>
+          ) : transactionsError ? (
+            <Alert severity="error" sx={{ my: 2 }}>
+              {transactionsError}
+            </Alert>
+          ) : transactions.length === 0 ? (
+            /* Este estado solo se muestra cuando la API responde sin movimientos. */
+            <Box sx={{ py: 4, textAlign: 'center' }}>
+              <Typography
+                variant="body1"
+                fontWeight={600}
+                color="text.primary"
+              >
+                Todavía no hay movimientos para mostrar
+              </Typography>
 
-              return (
-                <Box
-                  key={transaction.id}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: { xs: 1.5, sm: 2 },
-                    py: { xs: 1.75, sm: 1.5 },
-                    borderBottom:
-                      index < transactions.length - 1
-                        ? '1px solid'
-                        : 'none',
-                    borderColor: 'divider',
-                  }}
-                >
-                  {/* Badge circular con borde tenue */}
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 0.5 }}
+              >
+                Cuando realices una operación, vas a poder verla acá.
+              </Typography>
+            </Box>
+          ) : (
+            /* Los movimientos llegan ordenados del más reciente al más antiguo. */
+            <Box>
+              {transactions.map((transaction, index) => {
+                const presentation =
+                  getTransactionPresentation(transaction, mode);
+                const TransactionIcon = presentation.Icon;
+                const title = getTransactionTitle(transaction);
+                const subtext = getTransactionSubtext(transaction);
+
+                return (
                   <Box
+                    key={transaction.id}
                     sx={{
-                      width: { xs: 44, sm: 40 },
-                      height: { xs: 44, sm: 40 },
-                      flexShrink: 0,
-                      borderRadius: '50%',
-                      display: 'flex',
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        xs: '40px minmax(0, 1fr) auto',
+                        sm: '44px minmax(0, 1fr) auto',
+                      },
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '2px solid',
-                      borderColor:
-                        presentation.borderColor || presentation.iconColor,
-                      bgcolor: presentation.iconBackground,
-                      color: presentation.iconColor,
+                      columnGap: { xs: 1.25, sm: 2 },
+                      py: { xs: 1.5, sm: 1.5 },
+                      borderBottom:
+                        index < transactions.length - 1
+                          ? '1px solid'
+                          : 'none',
+                      borderColor: 'divider',
                     }}
                   >
-                    <TransactionIcon fontSize="small" />
-                  </Box>
-                  {/* Título y subtexto (concepto • fecha) */}
-                  <Box
-                    sx={{
-                      flex: 1,
-                      minWidth: 0,
-                      textAlign: 'left',
-                    }}
-                  >
+                    {/* Badge circular con borde tenue */}
+                    <Box
+                      sx={{
+                        width: { xs: 40, sm: 44 },
+                        height: { xs: 40, sm: 44 },
+                        flexShrink: 0,
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px solid',
+                        borderColor:
+                          presentation.borderColor || presentation.iconColor,
+                        bgcolor: presentation.iconBackground,
+                        color: presentation.iconColor,
+                      }}
+                    >
+                      <TransactionIcon fontSize="small" />
+                    </Box>
+                    {/* Título y subtexto (concepto • fecha) */}
+                    <Box
+                      sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        textAlign: 'left',
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        fontWeight={700}
+                        noWrap
+                        sx={{
+                          color: 'text.primary',
+                          lineHeight: 1.3,
+                          fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                        }}
+                      >
+                        {title}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        noWrap
+                        sx={{
+                          fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                          mt: 0.2,
+                        }}
+                      >
+                        {subtext}
+                      </Typography>
+                    </Box>
+                    {/* El signo y el color diferencian ingresos y egresos. */}
                     <Typography
                       variant="body1"
-                      fontWeight={700}
                       sx={{
-                        color: 'text.primary',
-                        lineHeight: 1.3,
-                        fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                        flexShrink: 0,
+                        textAlign: 'right',
+                        fontWeight: 700,
+                        color: presentation.amountColor,
+                        whiteSpace: 'nowrap',
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                       }}
                     >
-                      {title}
-                    </Typography>
-
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      noWrap
-                      sx={{
-                        fontSize: { xs: '0.8rem', sm: '0.85rem' },
-                        mt: 0.2,
-                      }}
-                    >
-                      {subtext}
+                      {presentation.sign}
+                      {formatCurrency(transaction.amount)}
                     </Typography>
                   </Box>
-                  {/* El signo y el color diferencian ingresos y egresos. */}
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      flexShrink: 0,
-                      textAlign: 'right',
-                      fontWeight: 700,
-                      color: presentation.amountColor,
-                      fontSize: { xs: '0.95rem', sm: '1rem' },
-                    }}
-                  >
-                    {presentation.sign}
-                    {formatCurrency(transaction.amount)}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Box>
-        )}
-      </Paper>
-    </Box>
+                );
+              })}
+            </Box>
+          )}
+        </Paper>
+      </Box>
     </Box>
   );
 }
