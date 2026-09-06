@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import {
   Box,
@@ -50,46 +50,51 @@ function MovementsPage() {
     severity: 'error',
   });
 
-  /**
-   * Obtiene los movimientos del backend aplicando los filtros
-   * y la paginación actual.
-   *
-   * Se usa el mismo patrón que AdminPage para mantener
-   * consistencia en el manejo de estado.
-   */
-  const fetchTransactions = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      // El backend usa paginación 1-indexed; MUI TablePagination
-      // usa 0-indexed, por lo que sumamos 1.
-      const data = await transactionService.getMyTransactions(
-        page + 1,
-        rowsPerPage,
-        filters,
-      );
-
-      const items = data.items ?? [];
-      const total = data.totalCount ?? data.totalItems ?? items.length;
-
-      setTransactions(items);
-      setTotalCount(total);
-    } catch {
-      setTransactions([]);
-      setTotalCount(0);
-      setSnackbar({
-        open: true,
-        message: 'No pudimos consultar tus movimientos en este momento.',
-        severity: 'error',
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [page, rowsPerPage, filters]);
-
   useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+    let ignore = false;
+
+    const loadTransactions = async () => {
+      try {
+        setLoading(true);
+
+        // El backend usa paginación 1-indexed; MUI TablePagination
+        // usa 0-indexed, por lo que sumamos 1.
+        const data = await transactionService.getMyTransactions(
+          page + 1,
+          rowsPerPage,
+          filters,
+        );
+
+        if (!ignore) {
+          const items = data.items ?? [];
+          const total = data.totalCount ?? data.totalItems ?? items.length;
+
+          setTransactions(items);
+          setTotalCount(total);
+        }
+      } catch {
+        if (!ignore) {
+          setTransactions([]);
+          setTotalCount(0);
+          setSnackbar({
+            open: true,
+            message: 'No pudimos consultar tus movimientos en este momento.',
+            severity: 'error',
+          });
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadTransactions();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, rowsPerPage, filters]);
 
   /**
    * Aplica ordenamiento client-side sobre la página actual.
