@@ -1,6 +1,8 @@
 import {
   AccountBalanceOutlined,
-  CheckCircleOutlineOutlined,
+  ArrowBackOutlined,
+  DescriptionOutlined,
+  PaymentsOutlined,
   SwapHorizOutlined,
 } from '@mui/icons-material';
 import {
@@ -22,6 +24,7 @@ import {
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import accountService from '../services/accountService';
+import transferSuccessIllustration from '../assets/illustrations/transfer-success.svg';
 
 /**
  * Página para iniciar una transferencia desde la cuenta del usuario.
@@ -198,26 +201,51 @@ function TransferPage() {
           width: '100%',
           maxWidth: 620,
           mx: 'auto',
-          px: { xs: 3, md: 4 },
-          pt: { xs: 6, md: 8 },
-          pb: 4,
+          px: { xs: 2, sm: 3, md: 4 },
+          pt: { xs: 3, sm: 5, md: 6 },
+          pb: { xs: 12, sm: 5 },
         }}
       >
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 3, sm: 5 },
+            p: {
+              xs: 0,
+              sm: 4,
+              md: 5,
+            },
             textAlign: 'center',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
+
+            // En mobile el resultado utiliza directamente la superficie de la
+            // página. Desde tablet recuperamos la card para delimitar el contenido.
+            border: {
+              xs: 'none',
+              sm: '1px solid',
+            },
+            borderColor: {
+              sm: 'divider',
+            },
+            borderRadius: {
+              xs: 0,
+              sm: 3,
+            },
+            backgroundColor: {
+              xs: 'transparent',
+              sm: 'background.paper',
+            },
           }}
         >
-          <CheckCircleOutlineOutlined
-            color="success"
+          <Box
+            component="img"
+            src={transferSuccessIllustration}
+            alt=""
+            aria-hidden="true"
             sx={{
-              fontSize: 64,
-              mb: 2,
+              display: 'block',
+              width: { xs: 96, sm: 112 },
+              height: 'auto',
+              mx: 'auto',
+              mb: { xs: 2, sm: 3 },
             }}
           />
 
@@ -226,46 +254,62 @@ function TransferPage() {
             component="h1"
             fontWeight={700}
             color="text.primary"
+            sx={{
+              fontSize: { xs: '1.5rem', sm: '1.75rem' },
+            }}
           >
             Transferencia realizada
           </Typography>
 
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            El dinero fue enviado correctamente.
+          <Typography
+            color="text.secondary"
+            sx={{
+              mt: 1,
+              fontSize: { xs: '1rem', sm: '1.125rem' },
+            }}
+          >
+            Enviaste {formatCurrency(transferResult.amount)} correctamente.
           </Typography>
 
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="body2" color="text.secondary">
-              Monto transferido
+          {/* El nuevo saldo se destaca como la información principal
+              posterior a una transferencia exitosa. */}
+          <Box
+            sx={{
+              mt: { xs: 4, sm: 4 },
+              py: { xs: 3, sm: 3.5 },
+              px: { xs: 2, sm: 3 },
+              backgroundColor: 'background.brandSoft',
+              borderRadius: 3,
+            }}
+          >
+            <Typography
+              variant="body1"
+              color="text.primary"
+              fontWeight={600}
+            >
+              Nuevo saldo disponible
             </Typography>
 
             <Typography
-              variant="h4"
               fontWeight={700}
-              sx={{ mt: 0.5, color: 'text.primary' }}
+              color="text.primary"
+              sx={{
+                mt: 0.75,
+                fontSize: {
+                  xs: '2rem',
+                  sm: '2.25rem',
+                },
+                lineHeight: 1.2,
+              }}
             >
-              {formatCurrency(transferResult.amount)}
+              {formatCurrency(transferResult.newBalance)}
             </Typography>
           </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          <Typography variant="body2" color="text.secondary">
-            Nuevo saldo disponible
-          </Typography>
-
-          <Typography
-            variant="h5"
-            fontWeight={700}
-            sx={{ mt: 0.5 }}
-          >
-            {formatCurrency(transferResult.newBalance)}
-          </Typography>
 
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={2}
-            sx={{ mt: 4 }}
+            sx={{ mt: { xs: 3, sm: 4 } }}
           >
             <Button
               variant="outlined"
@@ -300,54 +344,73 @@ function TransferPage() {
     <Box
       sx={{
         width: '100%',
-        maxWidth: 720,
+        maxWidth: 760,
         mx: 'auto',
-        px: { xs: 3, md: 4 },
-        pt: { xs: 4, md: 6 },
+        px: { xs: 2, sm: 3, md: 4 },
+        pt: { xs: 2, md: 3 },
         pb: { xs: 3, md: 4 },
       }}
     >
-      <Box
-        component="nav"
-        aria-label="Ruta de navegación"
-        sx={{
-          mb: 4,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          color: 'text.secondary',
-        }}
-      >
+      {/* En mobile priorizamos una navegación de regreso compacta.
+          En desktop conservamos el breadcrumb para aportar contexto. */}
+      <Box sx={{ mb: { xs: 2, md: 4 } }}>
         <Button
           onClick={() => navigate('/')}
+          aria-label="Volver al inicio"
           sx={{
-            minWidth: 'auto',
+            display: { xs: 'inline-flex', md: 'none' },
+            minWidth: 44,
+            width: 44,
+            height: 44,
             p: 0,
-            textTransform: 'none',
-            fontWeight: 600,
+            color: 'text.secondary',
           }}
         >
-          Inicio
+          <ArrowBackOutlined />
         </Button>
 
-        <Typography
-          component="span"
-          color="text.secondary"
-          aria-hidden="true"
+        <Box
+          component="nav"
+          aria-label="Ruta de navegación"
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+            gap: 1,
+            color: 'text.secondary',
+          }}
         >
-          /
-        </Typography>
+          <Button
+            onClick={() => navigate('/')}
+            sx={{
+              minWidth: 'auto',
+              p: 0,
+              textTransform: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Inicio
+          </Button>
 
-        <Typography
-          component="span"
-          color="text.secondary"
-          aria-current="page"
-        >
-          Transferir dinero
-        </Typography>
+          <Typography component="span" color="text.secondary" aria-hidden="true">
+            /
+          </Typography>
+
+          <Typography
+            component="span"
+            color="text.secondary"
+            aria-current="page"
+          >
+            Transferir dinero
+          </Typography>
+        </Box>
       </Box>
 
-      <Box sx={{ mb: 5 }}>
+      <Box
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          mb: 4,
+        }}
+      >
         <Typography
           variant="h4"
           component="h1"
@@ -358,7 +421,6 @@ function TransferPage() {
               xs: '1.75rem',
               sm: '2.125rem',
             },
-            textAlign: 'center',
           }}
         >
           Transferir dinero
@@ -366,13 +428,10 @@ function TransferPage() {
 
         <Typography
           color="text.secondary"
-          sx={{
-            mt: 1,
-            textAlign: 'center',
-          }}
+          sx={{ mt: 1 }}
         >
-          Enviá dinero desde tu cuenta de Digital ARS.
-        </Typography>
+        Enviá dinero desde tu cuenta de Digital ARS.
+      </Typography>
       </Box>
 
       <Paper
@@ -381,31 +440,39 @@ function TransferPage() {
         noValidate
         elevation={0}
         sx={{
-          p: { xs: 3, sm: 4 },
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
+          p: { xs: 0, md: 4 },
+          bgcolor: { xs: 'transparent', md: 'background.paper' },
+          border: { xs: 'none', md: '1px solid' },
+          borderColor: { md: 'divider' },
+          borderRadius: { xs: 0, md: 3 },
         }}
       >
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: 'center',
-            mb: 3,
-          }}
-        >
-          <SwapHorizOutlined color="primary" />
-
+        <Box sx={{ mb: 3 }}>
           <Typography
-            variant="h6"
-            component="h2"
-            fontWeight={600}
+            variant="h4"
+            component="h1"
+            fontWeight={700}
             color="text.primary"
+            sx={{
+              fontSize: {
+                xs: '1.5rem',
+                md: '1.25rem',
+              },
+            }}
           >
             Datos de la transferencia
           </Typography>
-        </Stack>
+
+          <Typography
+            color="text.secondary"
+            sx={{
+              display: { xs: 'block', md: 'none' },
+              mt: 0.5,
+            }}
+          >
+            Completá los datos para continuar.
+          </Typography>
+        </Box>
 
         {requestError && (
           <Alert severity="info" sx={{ mb: 3 }}>
@@ -436,7 +503,6 @@ function TransferPage() {
           placeholder="Ej.: 123"
           fullWidth
           autoFocus
-          inputMode="numeric"
           slotProps={{
             input: {
               startAdornment: (
@@ -444,6 +510,10 @@ function TransferPage() {
                   <AccountBalanceOutlined />
                 </InputAdornment>
               ),
+            },
+            htmlInput: {
+              inputMode: 'numeric',
+              pattern: '[0-9]*',
             },
           }}
         />
@@ -470,12 +540,14 @@ function TransferPage() {
           helperText={amountError || 'Ingresá el monto que querés enviar.'}
           placeholder="0,00"
           fullWidth
-          inputMode="decimal"
           slotProps={{
             input: {
               startAdornment: (
                 <InputAdornment position="start">$</InputAdornment>
               ),
+            },
+            htmlInput: {
+              inputMode: 'decimal',
             },
           }}
           sx={{ mt: 3 }}
@@ -487,9 +559,14 @@ function TransferPage() {
           onChange={(event) => {
             setDescription(event.target.value);
           }}
-          helperText="Podés agregar brevemente el motivo de la transferencia."
+          helperText="Indicá brevemente el motivo de la transferencia."
           placeholder="Ej.: Pago de servicios"
           fullWidth
+          slotProps={{
+            htmlInput: {
+              inputMode: 'text',
+            },
+          }}
           sx={{ mt: 3 }}
         />
 
@@ -527,61 +604,119 @@ function TransferPage() {
           Confirmar transferencia
         </DialogTitle>
 
-        <DialogContent>
+        <DialogContent
+          sx={{
+            px: { xs: 3, sm: 4 },
+            pb: 2,
+          }}
+        >
           <Typography color="text.secondary" sx={{ mb: 3 }}>
             Revisá los datos antes de continuar.
           </Typography>
 
-          <Stack spacing={2.5}>
-            <Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-              >
-                Cuenta destinataria
-              </Typography>
-
-              <Typography fontWeight={600} sx={{ mt: 0.5 }}>
-                Cuenta {destinationAccountId}
-              </Typography>
-            </Box>
-
-            <Divider />
-
-            <Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-              >
-                Monto
-              </Typography>
-
-              <Typography
-                variant="h5"
-                fontWeight={700}
+          <Stack divider={<Divider flexItem />}>
+            {/* Cuenta destinataria */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+                py: 2,
+              }}
+            >
+              <AccountBalanceOutlined
+                color="primary"
                 sx={{
-                  mt: 0.5,
-                  color: 'text.primary',
+                  flexShrink: 0,
                 }}
-              >
-                {formatCurrency(getNumericAmount())}
-              </Typography>
-            </Box>
+              />
 
-            <Divider />
+              <Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Cuenta destinataria
+                </Typography>
 
-            <Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-              >
-                Descripción
-              </Typography>
+                <Typography
+                  fontWeight={600}
+                  color="text.primary"
+                  sx={{ mt: 0.25 }}
+                >
+                  Cuenta {destinationAccountId}
+                </Typography>
+              </Box>
+            </Stack>
 
-              <Typography fontWeight={600} sx={{ mt: 0.5 }}>
-                {description.trim() || 'Sin descripción'}
-              </Typography>
-            </Box>
+            {/* Monto */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+                py: 2,
+              }}
+            >
+              <PaymentsOutlined
+                color="primary"
+                sx={{
+                  flexShrink: 0,
+                }}
+              />
+
+              <Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Monto
+                </Typography>
+
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  color="text.primary"
+                  sx={{ mt: 0.25 }}
+                >
+                  {formatCurrency(getNumericAmount())}
+                </Typography>
+              </Box>
+            </Stack>
+
+            {/* Descripción */}
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+                py: 2,
+              }}
+            >
+              <DescriptionOutlined
+                color="primary"
+                sx={{
+                  flexShrink: 0,
+                }}
+              />
+
+              <Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Descripción
+                </Typography>
+
+                <Typography
+                  fontWeight={600}
+                  color="text.primary"
+                  sx={{ mt: 0.25 }}
+                >
+                  {description.trim() || 'Sin descripción'}
+                </Typography>
+              </Box>
+            </Stack>
           </Stack>
         </DialogContent>
 
