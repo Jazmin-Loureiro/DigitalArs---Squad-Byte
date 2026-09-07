@@ -200,14 +200,14 @@ function ProfilePage() {
     <Box
       sx={{
         width: "100%",
-        py: { xs: 2, md: 4 },
-        px: { xs: 2, md: 3 },
+        py: { xs: 3, md: 4 },
+        px: { xs: 2, md: 4 },
       }}
     >
       {/* Título de página consistente con el resto de las secciones principales. */}
       <Typography
         component="h1"
-        variant="h1"
+        variant="h2"
         sx={{
           mb: { xs: 3, md: 4 },
         }}
