@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Button,
-  Card,
   IconButton,
   InputAdornment,
   TextField,
@@ -178,40 +177,51 @@ function AdminPage() {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
-        <PeopleIcon sx={{ color: "primary.main", fontSize: 32 }} />
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 1100,
+        mx: "auto",
+        px: { xs: 2, md: 4 },
+        pt: { xs: 3, md: 4 },
+        pb: { xs: 3, md: 4 },
+      }}
+    >
+      {/* Encabezado de página idéntico a MovementsPage */}
+      <Box sx={{ mb: { xs: 3, md: 4 } }}>
         <Typography
-          variant="h4"
           component="h1"
-          fontWeight={700}
-          color="text.primary"
+          variant="h2"
+          sx={{
+            mb: { xs: 0, md: 1 },
+            textAlign: "left",
+          }}
         >
           Gestión de Usuarios
         </Typography>
-      </Box>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Administrá el acceso, roles y estados de los usuarios de Digital ARS.
-      </Typography>
 
-      <Card
-        elevation={0}
-        sx={{
-          p: { xs: 2, md: 3 },
-          borderRadius: 3,
-          border: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        {/* Barra de herramientas: Búsqueda y Botón de Acción */}
+        <Typography
+          color="text.secondary"
+          sx={{
+            display: { xs: "none", md: "block" },
+            textAlign: "left",
+          }}
+        >
+          Administrá el acceso, roles y estados de los usuarios de Digital ARS.
+        </Typography>
+      </Box>
+
+      {/* Contenedor plano sin Card pesada */}
+      <Box>
+        {/* Barra de herramientas: Búsqueda y Botón */}
         <Box
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
             alignItems: { xs: "stretch", sm: "center" },
-            gap: 2,
-            mb: 3,
+            gap: 1.5,
+            mb: 2,
           }}
         >
           <TextField
@@ -223,10 +233,14 @@ function AdminPage() {
               setPage(0);
             }}
             sx={{
-              width: { xs: "100%", sm: 320 },
+              width: { xs: "100%", sm: 300 },
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
                 bgcolor: "background.paper",
+                fontSize: "0.84rem",
+              },
+              "& .MuiInputBase-input": {
+                py: "7.5px",
               },
             }}
             slotProps={{
@@ -249,12 +263,17 @@ function AdminPage() {
 
           <Button
             variant="contained"
+            size="small"
             startIcon={<PersonAddOutlined />}
             onClick={handleOpenCreate}
             sx={{
               fontWeight: 600,
-              fontSize: "0.9rem",
-              px: 2.5,
+              fontSize: "0.84rem",
+              py: "7.5px",
+              px: 2,
+              borderRadius: 2,
+              textTransform: "none",
+              whiteSpace: "nowrap",
             }}
           >
             Crear usuario
@@ -276,7 +295,7 @@ function AdminPage() {
           onEdit={handleOpenEdit}
           onDelete={handleOpenDelete}
         />
-      </Card>
+      </Box>
 
       <UserFormDialog
         open={formOpen}
