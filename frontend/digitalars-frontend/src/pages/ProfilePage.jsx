@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
-  Card,
   Chip,
   CircularProgress,
+  Divider,
   List,
   ListItem,
   ListItemButton,
@@ -23,7 +23,6 @@ import {
   NotificationsNoneRounded,
   PersonOutlineRounded,
 } from "@mui/icons-material";
-import { alpha } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
@@ -194,11 +193,6 @@ function ProfilePage() {
       action: () => setActiveModal("logout"),
       color: "error.main",
       mobileOnly: true,
-      border: "error.light",
-
-      // El fondo destructivo deriva del color de error activo para
-      // mantener una intensidad consistente en Light y Dark.
-      bg: (theme) => alpha(theme.palette.error.main, 0.08),
     },
   ];
 
@@ -206,13 +200,29 @@ function ProfilePage() {
     <Box
       sx={{
         width: "100%",
-        maxWidth: 480,
-        mx: "auto",
         py: { xs: 2, md: 4 },
-        px: 2,
+        px: { xs: 2, md: 3 },
       }}
     >
-      {/* Header Resumen */}
+      {/* Título de página consistente con el resto de las secciones principales. */}
+      <Typography
+        component="h1"
+        variant="h1"
+        sx={{
+          mb: { xs: 3, md: 4 },
+        }}
+      >
+        Perfil
+      </Typography>
+
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 480,
+          mx: "auto",
+        }}
+      >
+      {/* Resumen del perfil */}
       <Stack sx={{ alignItems: "center", mb: 3 }}>
         <Avatar
           sx={{
@@ -255,30 +265,36 @@ function ProfilePage() {
         />
       </Stack>
 
-      {/* Lista atada al Theme */}
-      <List
-        disablePadding
-        sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}
-      >
-        {menuItems.map((item) => (
-          <Card
+      {/* Menú del perfil presentado como una lista simple.
+          Los divisores separan acciones sin agregar contenedores innecesarios. */}
+      <List disablePadding>
+        {menuItems.map((item, index) => (
+          <Box
             key={item.label}
-            elevation={0}
             sx={{
-              borderRadius: 3,
-              border: "1px solid",
-              borderColor: item.border || "divider",
-              bgcolor: item.bg || "background.paper",
               display: item.mobileOnly ? { xs: "block", md: "none" } : "block",
             }}
           >
+            {index > 0 && <Divider />}
+
             <ListItem disablePadding secondaryAction={item.customEnd}>
-              <ListItemButton onClick={item.action} sx={{ py: 1.5, px: 2 }}>
+              <ListItemButton
+                onClick={item.action}
+                sx={{
+                  minHeight: 64,
+                  px: 1,
+                  py: 1.5,
+                }}
+              >
                 <ListItemIcon
-                  sx={{ minWidth: 40, color: item.color || "text.primary" }}
+                  sx={{
+                    minWidth: 48,
+                    color: item.color || "text.primary",
+                  }}
                 >
                   {item.icon}
                 </ListItemIcon>
+
                 <ListItemText
                   primary={item.label}
                   slotProps={{
@@ -288,14 +304,17 @@ function ProfilePage() {
                     },
                   }}
                 />
+
                 {!item.customEnd && (
                   <ChevronRightRounded
-                    color={item.color ? "error" : "action"}
+                    sx={{
+                      color: item.color ? "error.main" : "text.secondary",
+                    }}
                   />
                 )}
               </ListItemButton>
             </ListItem>
-          </Card>
+          </Box>
         ))}
       </List>
 
@@ -335,6 +354,7 @@ function ProfilePage() {
         severity={snackbar.severity}
         onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
       />
+      </Box>
     </Box>
   );
 }
