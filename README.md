@@ -83,7 +83,7 @@ El backend se organiza en una arquitectura multicapa desacoplada orientada al do
 
 El esquema relacional fue modelado mediante Entity Framework Core Code First aplicando configuraciones desacopladas con `IEntityTypeConfiguration<T>`:
 
-![Diagrama Entidad Relación](../DigitalArs---Squad-Byte/docs/database/digitalars-er-diagram.png)
+![Diagrama Entidad Relación](docs/database/digitalars-er-diagram.png)
 
 ### Reglas Estructurales:
 
