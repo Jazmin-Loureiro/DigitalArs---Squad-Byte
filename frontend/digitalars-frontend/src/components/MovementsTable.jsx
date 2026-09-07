@@ -1,6 +1,5 @@
 import {
   Box,
-  Paper,
   Skeleton,
   TableSortLabel,
   Typography,
@@ -58,14 +57,10 @@ function MovementsTable({
   const { mode } = useColorScheme();
 
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 3,
-        overflow: 'hidden',
-        bgcolor: 'background.paper',
+        width: '100%',
+        minWidth: 0,
       }}
     >
       {/* Cabecera de ordenamiento y conteo */}
@@ -74,9 +69,9 @@ function MovementsTable({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: { xs: 2, sm: 3 },
+          gap: 1,
+          px: 0,
           py: 1.5,
-          bgcolor: 'background.subtle',
           borderBottom: '1px solid',
           borderColor: 'divider',
         }}
@@ -85,21 +80,54 @@ function MovementsTable({
           variant="subtitle2"
           fontWeight={700}
           color="text.primary"
+          sx={{
+            fontWeight: 600,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            lineHeight: 1.3,
+            minWidth: 0,
+            flex: 1,
+          }}
         >
           Historial de movimientos ({totalCount})
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '62px 68px',
+              sm: '80px 90px',
+            },
+            columnGap: { xs: 0.5, sm: 2 },
+            alignItems: 'center',
+            justifyItems: 'end',
+            flexShrink: 0,
+          }}
+        >
           <TableSortLabel
             active={sortField === 'createdDate'}
             direction={sortField === 'createdDate' ? sortDirection : 'desc'}
+            hideSortIcon={false}
             onClick={() => onSortChange('createdDate')}
             sx={{
               fontSize: '0.8125rem',
               fontWeight: 700,
-              color: sortField === 'createdDate' ? 'primary.main' : 'text.secondary',
-              '&.Mui-active': { color: 'primary.main' },
-              '& .MuiTableSortLabel-icon': { color: 'primary.main !important' },
+              color:
+                sortField === 'createdDate'
+                  ? 'primary.main'
+                  : 'text.secondary',
+
+              '&.Mui-active': {
+                color: 'primary.main',
+              },
+
+              '& .MuiTableSortLabel-icon': {
+                color:
+                  sortField === 'createdDate'
+                    ? 'primary.main !important'
+                    : 'text.disabled !important',
+                opacity: sortField === 'createdDate' ? 1 : 0.45,
+              },
             }}
           >
             Fecha
@@ -108,13 +136,27 @@ function MovementsTable({
           <TableSortLabel
             active={sortField === 'amount'}
             direction={sortField === 'amount' ? sortDirection : 'desc'}
+            hideSortIcon={false}
             onClick={() => onSortChange('amount')}
             sx={{
               fontSize: '0.8125rem',
               fontWeight: 700,
-              color: sortField === 'amount' ? 'primary.main' : 'text.secondary',
-              '&.Mui-active': { color: 'primary.main' },
-              '& .MuiTableSortLabel-icon': { color: 'primary.main !important' },
+              color:
+                sortField === 'amount'
+                  ? 'primary.main'
+                  : 'text.secondary',
+
+              '&.Mui-active': {
+                color: 'primary.main',
+              },
+
+              '& .MuiTableSortLabel-icon': {
+                color:
+                  sortField === 'amount'
+                    ? 'primary.main !important'
+                    : 'text.disabled !important',
+                opacity: sortField === 'amount' ? 1 : 0.45,
+              },
             }}
           >
             Monto
@@ -123,7 +165,13 @@ function MovementsTable({
       </Box>
 
       {/* Lista de movimientos / Skeleton / Vacío */}
-      <Box>
+      <Box
+        sx={{
+          minHeight: `calc(${rowsPerPage} * 72px)`,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {loading ? (
           /* Estado de carga con Skeleton */
           Array.from({ length: rowsPerPage || 5 }).map((_, idx) => (
@@ -133,8 +181,8 @@ function MovementsTable({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                px: { xs: 2, sm: 3 },
-                py: 2,
+                px: 0,
+                py: 1.8,
                 borderBottom:
                   idx < (rowsPerPage || 5) - 1 ? '1px solid' : 'none',
                 borderColor: 'divider',
@@ -179,7 +227,18 @@ function MovementsTable({
           ))
         ) : transactions.length === 0 ? (
           /* Estado vacío */
-          <Box sx={{ py: 6, textAlign: 'center', px: 2 }}>
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: `calc(${rowsPerPage} * 72px)`,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              px: 2,
+            }}
+          >
             <InboxOutlined
               sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }}
             />
@@ -214,7 +273,7 @@ function MovementsTable({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  px: { xs: 2, sm: 3 },
+                  px: 0,
                   py: 1.8,
                   borderBottom:
                     index < transactions.length - 1 ? '1px solid' : 'none',
@@ -288,9 +347,9 @@ function MovementsTable({
                 {/* Sección derecha: Monto aparte */}
                 <Typography
                   variant="body1"
-                  fontWeight={700}
                   sx={{
                     color: presentation.amountColor,
+                    fontWeight: presentation.type === 'deposit' ? 600 : 400,
                     whiteSpace: 'nowrap',
                     fontSize: { xs: '0.95rem', sm: '1rem' },
                     ml: 2,
@@ -315,7 +374,7 @@ function MovementsTable({
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
       />
-    </Paper>
+    </Box>
   );
 }
 

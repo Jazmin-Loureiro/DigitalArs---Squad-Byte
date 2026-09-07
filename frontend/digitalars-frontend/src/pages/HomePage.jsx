@@ -568,7 +568,7 @@ useEffect(() => {
                       sx={{
                         flexShrink: 0,
                         textAlign: 'right',
-                        fontWeight: 700,
+                        fontWeight: presentation.type === 'deposit' ? 600 : 400,
                         color: presentation.amountColor,
                         whiteSpace: 'nowrap',
                         fontSize: { xs: '0.875rem', sm: '1rem' },
