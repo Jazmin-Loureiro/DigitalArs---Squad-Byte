@@ -9,17 +9,16 @@ import {
   Container,
   IconButton,
   InputAdornment,
-  Paper,
   TextField,
   Typography,
 } from '@mui/material';
 
 import {
-  AccountBalanceWalletOutlined,
   VisibilityOffOutlined,
   VisibilityOutlined,
 } from '@mui/icons-material';
 
+import digitalArsLogo from '../assets/brand/digital-ars-logo.svg';
 import { useAuth } from '../hooks/useAuth';
 
 function LoginPage() {
@@ -94,172 +93,193 @@ function LoginPage() {
         minHeight: '100vh',
         bgcolor: 'background.default',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        px: 2,
-        py: 4,
+        px: { xs: 3, sm: 4 },
+        py: { xs: 5, sm: 7 },
       }}
     >
-      <Container maxWidth="sm">
-        <Paper
-          elevation={0}
+      <Container
+        maxWidth={false}
+        disableGutters
+        sx={{
+          width: '100%',
+          maxWidth: 480,
+        }}
+      >
+        {/* Identidad de Digital ARS y contexto de acceso. */}
+        <Box
           sx={{
-            p: { xs: 3, sm: 5 },
-            borderRadius: 3,
-            border: '1px solid',
-            borderColor: 'divider',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            mt: { xs: 4, sm: 6 },
+            mb: { xs: 5.5, sm: 6 },
+          }}
+        >
+        {/* Marca: isotipo + nombre, separados para controlar su escala. */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
           <Box
+            component="img"
+            src={digitalArsLogo}
+            alt=""
+            aria-hidden="true"
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              mb: 4,
+              width: { xs: 72, sm: 80 },
+              height: 'auto',
+              display: 'block',
             }}
-          >
-            <Box
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: 2,
-                bgcolor: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 2,
-              }}
-            >
-              <AccountBalanceWalletOutlined
-                sx={{
-                  color: 'primary.contrastText',
-                  fontSize: 32,
-                }}
-              />
-            </Box>
-
-            <Typography
-              variant="h4"
-              component="h1"
-              fontWeight={700}
-              color="text.primary"
-            >
-              Digital ARS
-            </Typography>
-
-            <Typography
-              color="text.secondary"
-              sx={{ mt: 1, textAlign: 'center' }}
-            >
-              Ingresá a tu cuenta
-            </Typography>
-          </Box>
-
-          {loginError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {loginError}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit} noValidate>
-            <TextField
-              fullWidth
-              label="Correo electrónico"
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-
-                if (errors.email) {
-                  setErrors((previous) => ({
-                    ...previous,
-                    email: '',
-                  }));
-                }
-              }}
-              error={Boolean(errors.email)}
-              helperText={errors.email}
-              autoComplete="email"
-              placeholder="nombre@ejemplo.com"
-              margin="normal"
-              disabled={loading}
-            />
-
-            <TextField
-              fullWidth
-              label="Contraseña"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-
-                if (errors.password) {
-                  setErrors((previous) => ({
-                    ...previous,
-                    password: '',
-                  }));
-                }
-              }}
-              error={Boolean(errors.password)}
-              helperText={errors.password}
-              autoComplete="current-password"
-              margin="normal"
-              disabled={loading}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() =>
-                          setShowPassword((previous) => !previous)
-                        }
-                        edge="end"
-                        aria-label={
-                          showPassword
-                            ? 'Ocultar contraseña'
-                            : 'Mostrar contraseña'
-                        }
-                      >
-                        {showPassword ? (
-                          <VisibilityOffOutlined />
-                        ) : (
-                          <VisibilityOutlined />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              size="large"
-              disabled={loading}
-              sx={{
-                mt: 3,
-                minHeight: 48,
-                fontWeight: 600,
-              }}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Ingresar'
-              )}
-            </Button>
-          </Box>
+          />
 
           <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mt: 4, textAlign: 'center' }}
+            component="div"
+            sx={{
+              mt: 1.25,
+              fontSize: { xs: '2rem', sm: '2.25rem' },
+              lineHeight: 1.1,
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              color: 'text.primary',
+            }}
           >
-            Tu información está protegida.
+            Digital{' '}
+            <Box
+              component="span"
+              sx={{
+                color: 'primary.main',
+              }}
+            >
+              ARS
+            </Box>
           </Typography>
-        </Paper>
+        </Box>
+
+        <Typography
+          variant="body1"
+          color="text.primary"
+          sx={{
+            mt: 2,
+            maxWidth: 360,
+            lineHeight: 1.5,
+          }}
+        >
+          Tu dinero en pesos, seguro y siempre disponible.
+        </Typography>
+        </Box>
+
+        <Typography
+          component="h1"
+          sx={{
+            mb: 3,
+            fontSize: { xs: '1rem', sm: '1.125rem' },
+            lineHeight: 1.4,
+            fontWeight: 700,
+          }}
+        >
+          Ingresá a tu cuenta
+        </Typography>
+
+        {loginError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {loginError}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            fullWidth
+            label="Correo electrónico"
+            type="email"
+            value={email}
+            onChange={(event) => {
+              setEmail(event.target.value);
+
+              if (errors.email) {
+                setErrors((previous) => ({
+                  ...previous,
+                  email: '',
+                }));
+              }
+            }}
+            error={Boolean(errors.email)}
+            helperText={errors.email}
+            autoComplete="email"
+            placeholder="nombre@ejemplo.com"
+            disabled={loading}
+            sx={{ mb: 2.5 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Contraseña"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+
+              if (errors.password) {
+                setErrors((previous) => ({
+                  ...previous,
+                  password: '',
+                }));
+              }
+            }}
+            error={Boolean(errors.password)}
+            helperText={errors.password}
+            autoComplete="current-password"
+            disabled={loading}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() =>
+                        setShowPassword((previous) => !previous)
+                      }
+                      edge="end"
+                      aria-label={
+                        showPassword
+                          ? 'Ocultar contraseña'
+                          : 'Mostrar contraseña'
+                      }
+                    >
+                      {showPassword ? (
+                        <VisibilityOffOutlined />
+                      ) : (
+                        <VisibilityOutlined />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            size="large"
+            disabled={loading}
+            sx={{
+              mt: 4,
+              minHeight: 48,
+              fontWeight: 600,
+            }}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Ingresar'
+            )}
+          </Button>
+        </Box>
       </Container>
     </Box>
   );
