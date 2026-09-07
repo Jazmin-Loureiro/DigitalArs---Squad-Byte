@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 
 import {
   Box,
-  Card,
   Typography,
 } from '@mui/material';
 
@@ -153,38 +152,46 @@ function MovementsPage() {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      {/* Encabezado centrado */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 1 }}>
-        <ReceiptLongOutlined sx={{ color: 'primary.main', fontSize: 32 }} />
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: 1100,
+        mx: 'auto',
+        px: { xs: 2, md: 4 },
+        pt: { xs: 3, md: 4 },
+        pb: { xs: 3, md: 4 },
+      }}
+    >
+      {/* Encabezado de página */}
+      <Box
+        sx={{
+          mb: { xs: 4, md: 3 },
+        }}
+      >
         <Typography
-          variant="h4"
           component="h1"
-          fontWeight={700}
-          sx={{ color: 'text.primary', textAlign: 'center' }}
+          variant="h2"
+          sx={{
+            mb: { xs: 0, md: 1 },
+            textAlign: 'left',
+          }}
         >
           Movimientos
         </Typography>
+
+        <Typography
+          color="text.secondary"
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            textAlign: 'left',
+          }}
+        >
+          Explorá tu historial completo de operaciones.
+        </Typography>
       </Box>
 
-      <Typography
-        variant="body1"
-        color="text.secondary"
-        sx={{ mb: 3, textAlign: 'center' }}
-      >
-        Explorá tu historial completo de operaciones.
-      </Typography>
-
       {/* Card contenedora — misma estética que AdminPage */}
-      <Card
-        elevation={0}
-        sx={{
-          p: { xs: 2, md: 3 },
-          borderRadius: 3,
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
+      <Box>
         {/* Barra de filtros */}
         <MovementsFilterBar
           filters={filters}
@@ -204,7 +211,7 @@ function MovementsPage() {
           onRowsPerPageChange={handleRowsPerPageChange}
           onSortChange={handleSortChange}
         />
-      </Card>
+      </Box>
 
       {/* Notificaciones de error */}
       <FeedbackSnackbar

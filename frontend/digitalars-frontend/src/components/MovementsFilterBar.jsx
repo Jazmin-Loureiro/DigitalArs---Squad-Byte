@@ -106,76 +106,97 @@ function MovementsFilterBar({ filters, onFilterChange }) {
             },
           }}
         >
-          <InputLabel id="filter-type-label">Tipo</InputLabel>
-          <Select
-            labelId="filter-type-label"
-            id="filter-type"
-            value={filters.type}
-            label="Tipo"
-            onChange={(e) => handleChange('type', e.target.value)}
-          >
-            {TRANSACTION_TYPE_OPTIONS.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.84rem' }}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </Select>
+        <Select
+          id="filter-type"
+          value={filters.type}
+          displayEmpty
+          onChange={(e) => handleChange('type', e.target.value)}
+          renderValue={(selected) => {
+            if (!selected) {
+              return (
+                <Typography component="span" color="text.secondary">
+                  Tipo
+                </Typography>
+              );
+            }
+
+            return TRANSACTION_TYPE_OPTIONS.find(
+              (option) => option.value === selected
+            )?.label;
+          }}
+        >
+          {TRANSACTION_TYPE_OPTIONS.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.84rem' }}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </Select>
         </FormControl>
-
-        {/* Fecha desde */}
-        <TextField
-          size="small"
-          label="Desde"
-          type="date"
-          value={filters.fromDate}
-          onChange={(e) => handleChange('fromDate', e.target.value)}
+        {/* En mobile las fechas comparten una fila para reducir
+            la altura del bloque de filtros. */}
+        <Box
           sx={{
-            minWidth: { xs: '100%', sm: 125, md: 135 },
-            maxWidth: { sm: 150 },
-            '& .MuiInputBase-root': {
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-              fontSize: '0.84rem',
-            },
-            '& .MuiInputLabel-root': {
-              fontSize: '0.84rem',
-            },
-            '& .MuiInputBase-input': {
-              py: '7.5px',
-            },
+            display: 'flex',
+            gap: 1.5,
+            width: { xs: '100%', sm: 'auto' },
           }}
-          slotProps={{
-            inputLabel: { shrink: true },
-          }}
-        />
-
-        {/* Fecha hasta */}
-        <TextField
-          size="small"
-          label="Hasta"
-          type="date"
-          value={filters.toDate}
-          onChange={(e) => handleChange('toDate', e.target.value)}
-          sx={{
-            minWidth: { xs: '100%', sm: 125, md: 135 },
-            maxWidth: { sm: 150 },
-            '& .MuiInputBase-root': {
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-              fontSize: '0.84rem',
-            },
-            '& .MuiInputLabel-root': {
-              fontSize: '0.84rem',
-            },
-            '& .MuiInputBase-input': {
-              py: '7.5px',
-            },
-          }}
-          slotProps={{
-            inputLabel: { shrink: true },
-          }}
-        />
-
+        >
+          {/* Fecha desde */}
+          <TextField
+            size="small"
+            label="Desde"
+            type="date"
+            value={filters.fromDate}
+            onChange={(e) => handleChange('fromDate', e.target.value)}
+            sx={{
+              minWidth: { xs: 0, sm: 125, md: 135 },
+              width: { xs: '50%', sm: 'auto' },
+              maxWidth: { sm: 150 },
+              '& .MuiInputBase-root': {
+                borderRadius: 2,
+                bgcolor: 'background.paper',
+                fontSize: '0.84rem',
+              },
+              '& .MuiSelect-select': {
+                display: 'flex',
+                alignItems: 'center',
+                boxSizing: 'border-box',
+                minHeight: 'unset !important',
+                py: '7.5px',
+              },
+            }}
+            slotProps={{
+              inputLabel: { shrink: true },
+            }}
+          />
+          {/* Fecha hasta */}
+          <TextField
+            size="small"
+            label="Hasta"
+            type="date"
+            value={filters.toDate}
+            onChange={(e) => handleChange('toDate', e.target.value)}
+            sx={{
+              minWidth: { xs: 0, sm: 125, md: 135 },
+              width: { xs: '50%', sm: 'auto' },
+              maxWidth: { sm: 150 },
+              '& .MuiInputBase-root': {
+                borderRadius: 2,
+                bgcolor: 'background.paper',
+                fontSize: '0.84rem',
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '0.84rem',
+              },
+              '& .MuiInputBase-input': {
+                py: '7.5px',
+              },
+            }}
+            slotProps={{
+              inputLabel: { shrink: true },
+            }}
+          />
+        </Box>
         {/* Acciones: Más filtros + Limpiar */}
         <Box
           sx={{
@@ -251,10 +272,9 @@ function MovementsFilterBar({ filters, onFilterChange }) {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
             flexWrap: 'wrap',
             gap: 1.5,
-            alignItems: { xs: 'stretch', sm: 'center' },
+            alignItems: 'center',
             mt: 1.5,
             pt: 1.5,
             borderTop: '1px solid',
@@ -263,23 +283,27 @@ function MovementsFilterBar({ filters, onFilterChange }) {
         >
           <TextField
             size="small"
-            label="Monto mín."
+            placeholder="Monto mín."
             type="number"
             value={filters.minAmount}
             onChange={(e) => handleChange('minAmount', e.target.value)}
             sx={{
-              minWidth: { xs: '100%', sm: 125, md: 135 },
+              minWidth: { xs: 0, sm: 125, md: 135 },
+              width: { xs: 'calc(50% - 6px)', sm: 'auto' },
               maxWidth: { sm: 150 },
               '& .MuiInputBase-root': {
                 borderRadius: 2,
                 bgcolor: 'background.paper',
                 fontSize: '0.84rem',
               },
-              '& .MuiInputLabel-root': {
-                fontSize: '0.84rem',
-              },
               '& .MuiInputBase-input': {
+                boxSizing: 'border-box',
                 py: '7.5px',
+
+                '&::placeholder': {
+                  color: 'text.secondary',
+                  opacity: 1,
+                },
               },
             }}
             slotProps={{
@@ -295,23 +319,27 @@ function MovementsFilterBar({ filters, onFilterChange }) {
 
           <TextField
             size="small"
-            label="Monto máx."
+            placeholder="Monto máx."
             type="number"
             value={filters.maxAmount}
             onChange={(e) => handleChange('maxAmount', e.target.value)}
             sx={{
-              minWidth: { xs: '100%', sm: 125, md: 135 },
+              minWidth: { xs: 0, sm: 125, md: 135 },
+              width: { xs: 'calc(50% - 6px)', sm: 'auto' },
               maxWidth: { sm: 150 },
               '& .MuiInputBase-root': {
                 borderRadius: 2,
                 bgcolor: 'background.paper',
                 fontSize: '0.84rem',
               },
-              '& .MuiInputLabel-root': {
-                fontSize: '0.84rem',
-              },
               '& .MuiInputBase-input': {
+                boxSizing: 'border-box',
                 py: '7.5px',
+
+                '&::placeholder': {
+                  color: 'text.secondary',
+                  opacity: 1,
+                },
               },
             }}
             slotProps={{
@@ -325,7 +353,13 @@ function MovementsFilterBar({ filters, onFilterChange }) {
             }}
           />
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
             <Typography variant="caption" color="text.secondary">
               Filtrá por rango de monto para acotar los resultados.
             </Typography>
