@@ -167,6 +167,9 @@ namespace DigitalArs.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -195,8 +198,9 @@ namespace DigitalArs.Infrastructure.Migrations
                             Id = 1,
                             Email = "admin@digitalars.com",
                             FirstName = "Admin",
+                            IsActive = true,
                             LastName = "DigitalArs",
-                            Password = "$2a$11$N.vKkUuJp0Xm1d07SZZp/.e68kQk1V6Q.d1eY9/Zl2A3W4Z8b3c9W",
+                            Password = "$2a$11$a7CaaYtCyAL1vCpAt6YUKOPZziCEjXCEtzyowiIovuzWyv0lXWbuK",
                             Points = 1000,
                             RoleId = 1
                         },
@@ -205,8 +209,9 @@ namespace DigitalArs.Infrastructure.Migrations
                             Id = 2,
                             Email = "juan.perez@digitalars.com",
                             FirstName = "Juan",
+                            IsActive = true,
                             LastName = "Perez",
-                            Password = "$2a$11$T7YV1aB0b1.C3d2E5F4G5.H6I7J8K9L0M1N2O3P4Q5R6S7T8U9V0W",
+                            Password = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S",
                             Points = 100,
                             RoleId = 2
                         },
@@ -215,8 +220,9 @@ namespace DigitalArs.Infrastructure.Migrations
                             Id = 3,
                             Email = "maria.gomez@digitalars.com",
                             FirstName = "Maria",
+                            IsActive = true,
                             LastName = "Gomez",
-                            Password = "$2a$11$T7YV1aB0b1.C3d2E5F4G5.H6I7J8K9L0M1N2O3P4Q5R6S7T8U9V0W",
+                            Password = "$2a$11$X2dq8rOxgNRJ4NHYDX.roOpOvpQxMJbkTEmNLhkooVSAsgJzsij7S",
                             Points = 150,
                             RoleId = 2
                         });

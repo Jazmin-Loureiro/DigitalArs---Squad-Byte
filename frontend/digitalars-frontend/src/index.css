@@ -1,0 +1,23 @@
+/**
+ * Estilos globales — Digital ARS
+ *
+ * La apariencia general de la aplicación se administra desde el theme
+ * de Material UI. Este archivo contiene únicamente normalizaciones
+ * estructurales necesarias para el layout raíz.
+ */
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}

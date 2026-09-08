@@ -8,6 +8,7 @@ namespace DigitalArs.Domain.Entities{
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public int Points { get; set; } = 0;
+        public bool IsActive { get; set; } = true;
 
         // Clave foranea y relacion con Role
         public int RoleId { get; set; }

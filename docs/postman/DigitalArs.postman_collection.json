@@ -1,0 +1,853 @@
+{
+	"info": {
+		"_postman_id": "digitalars-api-collection",
+		"name": "DigitalArs API",
+		"description": "Colección completa de la API de DigitalArs — Billetera Virtual.\n\nIncluye autenticación JWT, gestión de usuarios, cuentas y transacciones.\n\n## Uso rápido\n1. Ejecuta \"Login Admin\" o \"Login User\" para obtener un token automáticamente.\n2. Las variables `adminToken` y `userToken` se asignan vía scripts post-respuesta.\n3. Todos los endpoints protegidos usan el header `Authorization: Bearer {{userToken}}` o `{{adminToken}}`.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5016",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Endpoints de autenticación y obtención de tokens JWT.",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('adminToken', jsonData.token);",
+									"    pm.test('Token de admin asignado correctamente', function () {",
+									"        pm.expect(jsonData.token).to.be.a('string').and.not.empty;",
+									"    });",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@digitalars.com\",\n  \"password\": \"Admin123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica al usuario administrador y almacena el token JWT en la variable `adminToken`."
+					}
+				},
+				{
+					"name": "Login User (Juan Perez)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('userToken', jsonData.token);",
+									"    pm.test('Token de usuario asignado correctamente', function () {",
+									"        pm.expect(jsonData.token).to.be.a('string').and.not.empty;",
+									"    });",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"juan.perez@digitalars.com\",\n  \"password\": \"User123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica al usuario regular Juan Perez y almacena el token JWT en la variable `userToken`."
+					}
+				},
+				{
+					"name": "Login - Credenciales inválidas (401)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@digitalars.com\",\n  \"password\": \"PasswordIncorrecto\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Caso de prueba: credenciales incorrectas. Debe devolver 401 Unauthorized."
+					}
+				}
+			]
+		},
+		{
+			"name": "Users - Perfil propio",
+			"description": "Endpoints para que el usuario autenticado consulte y actualice su propio perfil.",
+			"item": [
+				{
+					"name": "Ver mi perfil",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Obtiene el perfil del usuario autenticado."
+					}
+				},
+				{
+					"name": "Actualizar mi perfil",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Perez Actualizado\",\n  \"email\": \"juan.perez@digitalars.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Actualiza los datos del perfil propio del usuario autenticado."
+					}
+				},
+				{
+					"name": "Cambiar contraseña (400 - actual incorrecta)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Perez\",\n  \"email\": \"juan.perez@digitalars.com\",\n  \"currentPassword\": \"PasswordIncorrecta!\",\n  \"newPassword\": \"NuevaPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Caso de prueba HU-18: contraseña actual incorrecta. Debe devolver 400 Bad Request con formato ErrorResponse."
+					}
+				}
+			]
+		},
+		{
+			"name": "Users - Admin CRUD",
+			"description": "Endpoints de gestión de usuarios. Requieren rol Admin.",
+			"item": [
+				{
+					"name": "Listar todos los usuarios",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users?page=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Obtiene la lista paginada de usuarios. Solo Admin."
+					}
+				},
+				{
+					"name": "Buscar usuarios por nombre",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users?search=juan&page=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "juan"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Busca usuarios por nombre o email. Solo Admin."
+					}
+				},
+				{
+					"name": "Obtener usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							]
+						},
+						"description": "Obtiene un usuario específico por su ID. Solo Admin."
+					}
+				},
+				{
+					"name": "Crear usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Nuevo\",\n  \"lastName\": \"Usuario\",\n  \"email\": \"nuevo.usuario@digitalars.com\",\n  \"password\": \"NuevoUser123!\",\n  \"roleId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Crea un nuevo usuario. Solo Admin."
+					}
+				},
+				{
+					"name": "Crear usuario - Email duplicado (409)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Duplicado\",\n  \"lastName\": \"Prueba\",\n  \"email\": \"juan.perez@digitalars.com\",\n  \"password\": \"Password123!\",\n  \"roleId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Caso de prueba HU-18: email ya registrado. Debe devolver 409 Conflict con formato ErrorResponse."
+					}
+				},
+				{
+					"name": "Actualizar usuario por ID",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Juan Editado\",\n  \"lastName\": \"Perez\",\n  \"email\": \"juan.perez@digitalars.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							]
+						},
+						"description": "Actualiza los datos de un usuario. Solo Admin."
+					}
+				},
+				{
+					"name": "Eliminar usuario (soft delete)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"3"
+							]
+						},
+						"description": "Elimina (soft delete) un usuario. Solo Admin. Devuelve 204 No Content."
+					}
+				},
+				{
+					"name": "Eliminar usuario inexistente (404)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/99999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"99999"
+							]
+						},
+						"description": "Caso de prueba HU-18: usuario no encontrado. Debe devolver 404 Not Found."
+					}
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"description": "Endpoints de gestión de cuentas, depósitos y transferencias.",
+			"item": [
+				{
+					"name": "Ver mi cuenta",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"me"
+							]
+						},
+						"description": "Obtiene la cuenta y saldo del usuario autenticado."
+					}
+				},
+				{
+					"name": "Ver cuenta por ID (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"2"
+							]
+						},
+						"description": "Obtiene una cuenta específica por ID. Solo Admin."
+					}
+				},
+				{
+					"name": "Depositar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 5000.00,\n  \"concept\": \"Depósito de prueba\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/deposit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"deposit"
+							]
+						},
+						"description": "Deposita dinero en la cuenta del usuario autenticado."
+					}
+				},
+				{
+					"name": "Depositar - Monto excesivo (400)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 999999999.00,\n  \"concept\": \"Depósito que excede el límite\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/deposit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"deposit"
+							]
+						},
+						"description": "Caso de prueba: monto superior al límite máximo por operación. Debe devolver 400."
+					}
+				},
+				{
+					"name": "Transferir",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"toAccountId\": 3,\n  \"amount\": 1000.00,\n  \"concept\": \"Transferencia de prueba\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"transfer"
+							]
+						},
+						"description": "Transfiere dinero a otra cuenta (HU-16)."
+					}
+				},
+				{
+					"name": "Transferir - Autotransferencia (400)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"toAccountId\": 2,\n  \"amount\": 100.00,\n  \"concept\": \"Intento de autotransferencia\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"transfer"
+							]
+						},
+						"description": "Caso de prueba HU-18: transferencia a la misma cuenta. Debe devolver 400."
+					}
+				},
+				{
+					"name": "Transferir - Saldo insuficiente (400)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"toAccountId\": 3,\n  \"amount\": 99999999.00,\n  \"concept\": \"Transferencia con saldo insuficiente\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"transfer"
+							]
+						},
+						"description": "Caso de prueba HU-18: saldo insuficiente. Debe devolver 400."
+					}
+				},
+				{
+					"name": "Transferir - Cuenta destino inexistente (404)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"toAccountId\": 999999,\n  \"amount\": 100.00,\n  \"concept\": \"Transferencia a cuenta inexistente\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts/transfer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"transfer"
+							]
+						},
+						"description": "Caso de prueba HU-18: cuenta destino no encontrada. Debe devolver 404."
+					}
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"description": "Endpoints de consulta de historial de transacciones (HU-17).",
+			"item": [
+				{
+					"name": "Mi historial de transacciones",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/me?page=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"me"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Obtiene el historial de transacciones paginado del usuario autenticado."
+					}
+				},
+				{
+					"name": "Mi historial - Con filtro de tipo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/me?type=Transfer&page=1&pageSize=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"me"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "Transfer"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Filtra transacciones por tipo (Deposit, Transfer)."
+					}
+				},
+				{
+					"name": "Mi historial - Con filtro de fechas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/me?from=2026-01-01&to=2026-12-31&page=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"me"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2026-01-01"
+								},
+								{
+									"key": "to",
+									"value": "2026-12-31"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Filtra transacciones por rango de fechas."
+					}
+				}
+			]
+		}
+	]
+}
