@@ -33,13 +33,31 @@ function LoginPage() {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
 
+    /**
+   * Valida el correo cuando el usuario termina de interactuar con el campo.
+   * Permite dar feedback temprano sin mostrar errores mientras está escribiendo.
+   */
+  const validateEmail = (value) => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      return 'Ingresá tu correo electrónico.';
+    }
+
+    if (!/\S+@\S+\.\S+/.test(trimmedValue)) {
+      return 'Ingresá un correo electrónico válido.';
+    }
+
+    return '';
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
-    if (!email.trim()) {
-      newErrors.email = 'Ingresá tu correo electrónico.';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Ingresá un correo electrónico válido.';
+    const emailError = validateEmail(email);
+
+    if (emailError) {
+      newErrors.email = emailError;
     }
 
     if (!password) {
@@ -198,14 +216,23 @@ function LoginPage() {
             type="email"
             value={email}
             onChange={(event) => {
-              setEmail(event.target.value);
+              const value = event.target.value;
 
+              setEmail(value);
+
+              // Una vez mostrado un error, lo actualizamos mientras el usuario corrige el campo.
               if (errors.email) {
                 setErrors((previous) => ({
                   ...previous,
-                  email: '',
+                  email: validateEmail(value),
                 }));
               }
+            }}
+            onBlur={() => {
+              setErrors((previous) => ({
+                ...previous,
+                email: validateEmail(email),
+              }));
             }}
             error={Boolean(errors.email)}
             helperText={errors.email}
@@ -221,14 +248,23 @@ function LoginPage() {
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(event) => {
-              setPassword(event.target.value);
+              const value = event.target.value;
 
+              setPassword(value);
+
+              // Una vez mostrado el error, lo actualizamos mientras el usuario corrige el campo.
               if (errors.password) {
                 setErrors((previous) => ({
                   ...previous,
-                  password: '',
+                  password: value ? '' : 'Ingresá tu contraseña.',
                 }));
               }
+            }}
+            onBlur={() => {
+              setErrors((previous) => ({
+                ...previous,
+                password: password ? '' : 'Ingresá tu contraseña.',
+              }));
             }}
             error={Boolean(errors.password)}
             helperText={errors.password}
@@ -250,9 +286,9 @@ function LoginPage() {
                       }
                     >
                       {showPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
                         <VisibilityOutlined />
+                      ) : (
+                        <VisibilityOffOutlined />
                       )}
                     </IconButton>
                   </InputAdornment>
