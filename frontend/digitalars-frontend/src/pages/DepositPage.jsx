@@ -339,7 +339,7 @@ function DepositPage() {
           color="text.secondary"
           aria-current="page"
         >
-          Depositar dinero
+          Ingresar dinero
         </Typography>
       </Box>
 
@@ -358,7 +358,7 @@ function DepositPage() {
             fontSize: '2.125rem',
           }}
         >
-          Depositar dinero
+          Ingresar dinero
         </Typography>
 
         <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -399,7 +399,12 @@ function DepositPage() {
             component="h2"
             color="text.primary"
           >
-            Datos del depósito
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+              Datos del depósito
+            </Box>
+            <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>
+              Ingresar dinero
+            </Box>
           </Typography>
         </Box>
 
@@ -439,6 +444,7 @@ function DepositPage() {
               }
             }
           }}
+          onBlur={validateAmount}
           error={Boolean(amountError)}
           helperText={
             amountError ||
@@ -471,6 +477,7 @@ function DepositPage() {
               setConceptError('');
             }
           }}
+          onBlur={validateConcept}
           error={Boolean(conceptError)}
           helperText={
             conceptError || `${concept.length}/200 caracteres`

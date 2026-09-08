@@ -38,6 +38,7 @@ function TablePaginationFooter({
           minHeight: 52,
           px: { xs: 0, sm: 2 },
           gap: { xs: 0, sm: 1 },
+          justifyContent: { xs: 'space-between', sm: 'flex-start' },
         },
 
         '& .MuiTablePagination-spacer': {
@@ -46,10 +47,10 @@ function TablePaginationFooter({
         },
 
         '& .MuiTablePagination-selectLabel': {
-          fontSize: { xs: '0.75rem', sm: '0.85rem' },
+          display: { xs: 'none', sm: 'block' },
+          fontSize: '0.85rem',
           color: 'text.secondary',
           whiteSpace: 'nowrap',
-          ml: { xs: 0, sm: 0 },
         },
 
         '& .MuiTablePagination-select': {
@@ -64,18 +65,18 @@ function TablePaginationFooter({
           fontSize: { xs: '0.75rem', sm: '0.85rem' },
           color: 'text.secondary',
           whiteSpace: 'nowrap',
-          ml: { xs: 1, sm: 2 },
+          ml: { xs: 0, sm: 2 },
         },
 
         '& .MuiTablePagination-actions': {
           display: 'flex',
           flexShrink: 0,
-          ml: { xs: 0.5, sm: 2 },
+          ml: { xs: 0, sm: 2 },
 
           '& .MuiIconButton-root': {
-            width: { xs: 36, sm: 44 },
-            height: { xs: 36, sm: 44 },
-            p: { xs: 0.5, sm: 1 },
+            width: 44,
+            height: 44,
+            p: 1,
           },
         },
       }}

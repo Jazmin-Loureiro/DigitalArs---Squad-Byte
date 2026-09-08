@@ -41,6 +41,37 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
     setErrors({});
   };
 
+  const validateRequiredField = (field, message) => {
+    setErrors((previous) => ({
+      ...previous,
+      [field]: formData[field].trim() ? "" : message,
+    }));
+  };
+
+  const validateEmail = () => {
+    const email = formData.email.trim();
+
+    setErrors((previous) => ({
+      ...previous,
+      email: !email
+        ? "El email es obligatorio."
+        : !/\S+@\S+\.\S+/.test(email)
+          ? "Formato de correo inválido."
+          : "",
+    }));
+  };
+
+  const validatePassword = () => {
+    setErrors((previous) => ({
+      ...previous,
+      password: !formData.password
+        ? "La contraseña es obligatoria."
+        : formData.password.length < 6
+          ? "Mínimo 6 caracteres."
+          : "",
+    }));
+  };
+
   const validate = () => {
     const errs = {};
     if (!formData.firstName.trim())
@@ -99,8 +130,19 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
               fullWidth
               label="Nombre"
               value={formData.firstName}
-              onChange={(e) =>
-                setFormData({ ...formData, firstName: e.target.value })
+              onChange={(e) => {
+                const value = e.target.value;
+                setFormData((previous) => ({ ...previous, firstName: value }));
+
+                if (errors.firstName) {
+                  setErrors((previous) => ({
+                    ...previous,
+                    firstName: value.trim() ? "" : "El nombre es obligatorio.",
+                  }));
+                }
+              }}
+              onBlur={() =>
+                validateRequiredField("firstName", "El nombre es obligatorio.")
               }
               error={Boolean(errors.firstName)}
               helperText={errors.firstName}
@@ -110,8 +152,19 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
               fullWidth
               label="Apellido"
               value={formData.lastName}
-              onChange={(e) =>
-                setFormData({ ...formData, lastName: e.target.value })
+              onChange={(e) => {
+                const value = e.target.value;
+                setFormData((previous) => ({ ...previous, lastName: value }));
+
+                if (errors.lastName) {
+                  setErrors((previous) => ({
+                    ...previous,
+                    lastName: value.trim() ? "" : "El apellido es obligatorio.",
+                  }));
+                }
+              }}
+              onBlur={() =>
+                validateRequiredField("lastName", "El apellido es obligatorio.")
               }
               error={Boolean(errors.lastName)}
               helperText={errors.lastName}
@@ -124,9 +177,18 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
             label="Correo electrónico"
             type="email"
             value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            onChange={(e) => {
+              const value = e.target.value;
+              setFormData((previous) => ({ ...previous, email: value }));
+
+              if (errors.email) {
+                setErrors((previous) => ({
+                  ...previous,
+                  email: "",
+                }));
+              }
+            }}
+            onBlur={mode === "create" ? validateEmail : undefined}
             error={Boolean(errors.email)}
             helperText={errors.email}
             disabled={saving || mode === "edit"}
@@ -139,9 +201,18 @@ function UserFormDialog({ open, mode, user, saving, onClose, onSave }) {
                 label="Contraseña"
                 type="password"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((previous) => ({ ...previous, password: value }));
+
+                  if (errors.password) {
+                    setErrors((previous) => ({
+                      ...previous,
+                      password: "",
+                    }));
+                  }
+                }}
+                onBlur={validatePassword}
                 error={Boolean(errors.password)}
                 helperText={errors.password}
                 disabled={saving}

@@ -252,7 +252,11 @@ function AdminPage() {
                 ),
                 endAdornment: search ? (
                   <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => setSearch("")}>
+                    <IconButton
+                      size="small"
+                      aria-label="Limpiar búsqueda"
+                      onClick={() => setSearch("")}
+                    >
                       <ClearIcon fontSize="small" />
                     </IconButton>
                   </InputAdornment>
@@ -263,16 +267,9 @@ function AdminPage() {
 
           <Button
             variant="contained"
-            size="small"
             startIcon={<PersonAddOutlined />}
             onClick={handleOpenCreate}
             sx={{
-              fontWeight: 600,
-              fontSize: "0.84rem",
-              py: "7.5px",
-              px: 2,
-              borderRadius: 2,
-              textTransform: "none",
               whiteSpace: "nowrap",
             }}
           >

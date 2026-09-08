@@ -497,6 +497,7 @@ function TransferPage() {
               }
             }
           }}
+          onBlur={validateDestination}
           error={Boolean(destinationError)}
           helperText={
             destinationError ||
@@ -538,6 +539,7 @@ function TransferPage() {
               }
             }
           }}
+          onBlur={validateAmount}
           error={Boolean(amountError)}
           helperText={amountError || 'Ingresá el monto que querés enviar.'}
           placeholder="0,00"

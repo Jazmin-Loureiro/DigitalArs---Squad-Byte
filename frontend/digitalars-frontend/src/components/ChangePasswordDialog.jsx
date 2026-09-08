@@ -88,6 +88,14 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
                 currentPassword: e.target.value,
               }))
             }
+            onBlur={() => {
+              setErrors((previous) => ({
+                ...previous,
+                currentPassword: passwords.currentPassword
+                  ? ""
+                  : "Ingresá tu contraseña actual.",
+              }));
+            }}
             error={Boolean(errors.currentPassword)}
             helperText={errors.currentPassword}
             slotProps={{
@@ -95,13 +103,16 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
+                      aria-label={
+                        showCurrent ? "Ocultar contraseña actual" : "Mostrar contraseña actual"
+                      }
                       edge="end"
                       onClick={() => setShowCurrent((prev) => !prev)}
                     >
                       {showCurrent ? (
-                        <VisibilityOffOutlined />
-                      ) : (
                         <VisibilityOutlined />
+                      ) : (
+                        <VisibilityOffOutlined />
                       )}
                     </IconButton>
                   </InputAdornment>
@@ -119,6 +130,14 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
             onChange={(e) =>
               setPasswords((prev) => ({ ...prev, newPassword: e.target.value }))
             }
+            onBlur={() => {
+              setErrors((previous) => ({
+                ...previous,
+                currentPassword: passwords.currentPassword
+                  ? ""
+                  : "Ingresá tu contraseña actual.",
+              }));
+            }}
             error={Boolean(errors.newPassword)}
             helperText={errors.newPassword || "Mínimo 6 caracteres."}
             slotProps={{
@@ -126,13 +145,16 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
+                      aria-label={
+                        showNew ? "Ocultar nueva contraseña" : "Mostrar nueva contraseña"
+                      }
                       edge="end"
                       onClick={() => setShowNew((prev) => !prev)}
                     >
                       {showNew ? (
-                        <VisibilityOffOutlined />
-                      ) : (
                         <VisibilityOutlined />
+                      ) : (
+                        <VisibilityOffOutlined />
                       )}
                     </IconButton>
                   </InputAdornment>
@@ -153,6 +175,15 @@ function ChangePasswordDialog({ open, onClose, onSave, saving }) {
                 confirmPassword: e.target.value,
               }))
             }
+            onBlur={() => {
+              setErrors((previous) => ({
+                ...previous,
+                confirmPassword:
+                  passwords.newPassword !== passwords.confirmPassword
+                    ? "Las contraseñas no coinciden."
+                    : "",
+              }));
+            }}
             error={Boolean(errors.confirmPassword)}
             helperText={errors.confirmPassword}
           />
